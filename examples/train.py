@@ -30,8 +30,9 @@ def main():
     parser.add_argument(
         "--env",
         type=str,
-        default="pettingzoo_mpe",
+        default="flow_cluster_env",
         choices=[
+            "flow_cluster_env"
             "smac",
             "mamujoco",
             "pettingzoo_mpe",
@@ -44,7 +45,7 @@ def main():
         help="Environment name. Choose from: smac, mamujoco, pettingzoo_mpe, gym, football, dexhands, smacv2, lag.",
     )
     parser.add_argument(
-        "--exp_name", type=str, default="installtest", help="Experiment name."
+        "--exp_name", type=str, default="flow_clustering", help="Experiment name."
     )
     parser.add_argument(
         "--load_config",

@@ -66,6 +66,8 @@ def get_task_name(env, env_args):
         task = env_args["task"]
     elif env == "lag":
         task = f"{env_args['scenario']}-{env_args['task']}"
+    elif env == "flow_cluster_env":
+        task = env_args["scenario"]
     return task
 
 

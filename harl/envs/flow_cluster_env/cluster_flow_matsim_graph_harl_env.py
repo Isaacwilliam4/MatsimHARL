@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 from filelock import FileLock
-from matsim_xml_dataset_cluster_flow import ClusterFlowMatsimXMLDataset
+from harl.envs.flow_cluster_env.matsim_xml_dataset_cluster_flow import ClusterFlowMatsimXMLDataset
 
 1
 class ClusterFlowMatsimGraphEnv(gym.Env):
@@ -20,7 +20,7 @@ class ClusterFlowMatsimGraphEnv(gym.Env):
     A custom Gymnasium environment for Matsim graph-based simulations.
     """
 
-    def __init__(self, config_path, save_dir=None, num_clusters=50):
+    def __init__(self, config_path, save_dir=None, num_clusters=50, **kwargs):
         """
         Initialize the environment.
 
