@@ -7,11 +7,13 @@ from harl.envs.gym.gym_logger import GYMLogger
 from harl.envs.football.football_logger import FootballLogger
 from harl.envs.dexhands.dexhands_logger import DexHandsLogger
 from harl.envs.lag.lag_logger import LAGLogger
+from harl.envs.flow_cluster_env.gym_logger import ClusterLogger
 
 FLAGS = flags.FLAGS
 FLAGS(["train_sc.py"])
 
 LOGGER_REGISTRY = {
+    "flow_cluster": ClusterLogger,
     "smac": SMACLogger,
     "mamujoco": MAMuJoCoLogger,
     "pettingzoo_mpe": PettingZooMPELogger,
