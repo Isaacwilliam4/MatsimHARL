@@ -63,7 +63,7 @@ class FlowSimEnv:
             Box(
                 low=-1,
                 high=2,
-                shape=(24, self.n_agents, self.n_agents)
+                shape=(24 * self.n_agents,)
             )
         )
 
@@ -71,7 +71,7 @@ class FlowSimEnv:
             Box(
                 low=-1,
                 high=2,
-                shape=(24, self.n_agents, self.n_agents)
+                shape=(24 * self.n_agents,)
             )
         )
 
@@ -79,7 +79,7 @@ class FlowSimEnv:
             Box(
                 low=-1,
                 high=2,
-                shape=(24, self.n_agents, self.n_agents)
+                shape=(24 * self.n_agents * self.n_agents,)
             )
         )
 
@@ -95,10 +95,11 @@ class FlowSimEnv:
             np.ndarray: Initial state of the environment.
             dict: Additional information.
         """
-        return self.dataset.flow_tensor.numpy(), dict(info="info")
+        return self.dataset.flow_tensor.numpy()
 
 
     def compute_reward(self, actions):
+        actions = actions.reshape(24, self.n_agents, self.n_agents)
         result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
         self.od_result = {}
         nx_graph = nx.DiGraph()
@@ -207,7 +208,6 @@ class FlowSimEnv:
         return (
             self.dataset.flow_tensor,
             self.reward,
-            self.done,
             self.done,
             dict(graph_env_inst=self),
         )

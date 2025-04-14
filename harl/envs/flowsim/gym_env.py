@@ -1,5 +1,6 @@
 import copy
 from harl.envs.flowsim.flowsim import FlowSimEnv
+import numpy as np
 
 class GYMEnv:
     def __init__(self, args):
@@ -19,18 +20,18 @@ class GYMEnv:
         if self.discrete:
             obs, rew, done, info = self.env.step(actions.flatten()[0])
         else:
-            obs, rew, done, info = self.env.step(actions[0])
+            obs, rew, done, info = self.env.step(actions)
         if done:
             if (
                 "TimeLimit.truncated" in info.keys()
                 and info["TimeLimit.truncated"] == True
             ):
                 info["bad_transition"] = True
-        return [obs], [obs], [[rew]], [done], [info], self.get_avail_actions()
+        return obs, obs, self.env.repeat(rew), self.env.repeat(done), [dict(env=info)], self.get_avail_actions()
 
     def reset(self):
         """Returns initial observations and states"""
-        obs = [self.env.reset()]
+        obs = self.env.reset()
         s_obs = copy.deepcopy(obs)
         return obs, s_obs, self.get_avail_actions()
 
