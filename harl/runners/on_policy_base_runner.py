@@ -355,6 +355,8 @@ class OnPolicyBaseRunner:
             rnn_states_critic,  # EP: (n_threads, dim), FP: (n_threads, n_agents, dim)
         ) = data
 
+        if len(rewards.shape) < 3:
+            rewards = rewards.reshape(rewards.shape[0], rewards.shape[1], 1)
         dones_env = np.all(dones, axis=1)  # if all agents are done, then env is done
         rnn_states[
             dones_env == True

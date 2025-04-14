@@ -27,6 +27,7 @@ class GYMEnv:
                 and info["TimeLimit.truncated"] == True
             ):
                 info["bad_transition"] = True
+                
         return obs, obs, self.env.repeat(rew), self.env.repeat(done), [dict(env=info)], self.get_avail_actions()
 
     def reset(self):
