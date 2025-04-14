@@ -6,7 +6,7 @@ class GYMEnv:
     def __init__(self, args):
         self.args = copy.deepcopy(args)
         self.env = gym.make(args["scenario"], **args)
-        self.n_agents = 1
+        self.n_agents = args["num_clusters"]
         self.share_observation_space = [self.env.observation_space]
         self.observation_space = [self.env.observation_space]
         self.action_space = [self.env.action_space]

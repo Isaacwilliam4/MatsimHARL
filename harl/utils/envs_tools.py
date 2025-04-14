@@ -93,8 +93,8 @@ def make_train_env(env_name, seed, n_threads, env_args):
                 from harl.envs.lag.lag_env import LAGEnv
 
                 env = LAGEnv(env_args)
-            elif env_name == "flow_cluster_env":
-                from harl.envs.flow_cluster_env.gym_env import GYMEnv
+            elif env_name == "flowsim":
+                from harl.envs.flowsim.gym_env import GYMEnv
                 env = GYMEnv(env_args)
             else:
                 print("Can not support the " + env_name + "environment.")
