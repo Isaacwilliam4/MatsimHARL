@@ -9,6 +9,7 @@ from pathlib import Path
 import networkx as nx
 import random
 import xml.etree.ElementTree as ET
+import os
 
 
 class FlowSimEnv(gym.Env):
@@ -16,7 +17,7 @@ class FlowSimEnv(gym.Env):
     A custom Gymnasium environment for Matsim graph-based simulations.
     """
 
-    def __init__(self, network_path, counts_path, save_dir, num_clusters):
+    def __init__(self, network_path, counts_path, save_dir, num_clusters, seed, **kwargs):
         """
         Initialize the environment.
 
@@ -26,6 +27,8 @@ class FlowSimEnv(gym.Env):
             save_dir (str): Directory to save outputs.
         """
         super().__init__()
+        save_dir = f"{save_dir}/{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
+        os.makedirs(save_dir)
         self.save_dir = save_dir
         current_time = datetime.now()
         self.time_string = current_time.strftime("%Y%m%d_%H%M%S_%f")
@@ -210,4 +213,6 @@ class FlowSimEnv(gym.Env):
         with open(self.error_path, "a") as f:
             f.write(message)
 
-
+    def seed(self, seed: int):
+        np.random.seed(seed)
+        torch.random.manual_seed(seed)

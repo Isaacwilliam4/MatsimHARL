@@ -51,4 +51,4 @@ class GYMEnv:
         self.env.close()
 
     def seed(self, seed):
-        self.env.seed(seed)
+        self.env.unwrapped.seed(seed)
