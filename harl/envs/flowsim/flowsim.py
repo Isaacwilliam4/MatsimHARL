@@ -1,8 +1,7 @@
-import gymnasium as gym
 import numpy as np
 import shutil
 import torch
-from gymnasium import spaces
+from gymnasium.spaces import Box
 from harl.envs.flowsim.flowsim_dataset import FlowSimDataset
 from datetime import datetime
 from pathlib import Path
@@ -12,7 +11,7 @@ import xml.etree.ElementTree as ET
 import os
 
 
-class FlowSimEnv(gym.Env):
+class FlowSimEnv:
     """
     A custom Gymnasium environment for Matsim graph-based simulations.
     """
@@ -26,7 +25,6 @@ class FlowSimEnv(gym.Env):
             num_agents (int): Number of agents in the environment.
             save_dir (str): Directory to save outputs.
         """
-        super().__init__()
         save_dir = f"{save_dir}/{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
         os.makedirs(save_dir)
         self.save_dir = save_dir
@@ -39,6 +37,7 @@ class FlowSimEnv(gym.Env):
         self.error_path: Path = Path(self.save_dir, "errors")
         self.plan_output_path: Path = Path(self.save_dir, "plans_output.xml")
         self.num_clusters = num_clusters
+        self.n_agents = num_clusters
 
         self.dataset = FlowSimDataset(
             self.network_path,
@@ -53,23 +52,36 @@ class FlowSimEnv(gym.Env):
         The action represents the log_10 of the quantity of cars leaving every cluster at every hour,
         we limit it to -1 to 2 or 0.1 (0) to 100 cars per cluster per hour.
         """
-        self.action_space : spaces.Box = spaces.Box(
-            low=-1,
-            high=2,
-            shape=(24, self.dataset.num_clusters, self.dataset.num_clusters)
-        )
-        
+
         self.done: bool = False
         self.lock_file = Path(self.save_dir, "lockfile.lock")
         self.best_output_response = None
 
-        self.observation_space: spaces.Box = spaces.Box(
-            low=-1,
-            high=2,
-            shape=(24, self.dataset.num_clusters, self.dataset.num_clusters)
+        self.flow_res = torch.zeros(self.dataset.target_graph.edge_attr.shape)
+
+        self.action_space : Box = self.repeat(
+            Box(
+                low=-1,
+                high=2,
+                shape=(24, self.n_agents, self.n_agents)
+            )
         )
 
-        self.flow_res = torch.zeros(self.dataset.target_graph.edge_attr.shape)
+        self.observation_space : Box = self.repeat(
+            Box(
+                low=-1,
+                high=2,
+                shape=(24, self.n_agents, self.n_agents)
+            )
+        )
+
+        self.share_observation_space : Box = self.repeat(
+            Box(
+                low=-1,
+                high=2,
+                shape=(24, self.n_agents, self.n_agents)
+            )
+        )
 
         # self.shortest_paths_set = set()
         # self.shortest_paths = np.zeros(self.dataset.target_graph)
@@ -216,3 +228,9 @@ class FlowSimEnv(gym.Env):
     def seed(self, seed: int):
         np.random.seed(seed)
         torch.random.manual_seed(seed)
+
+    def repeat(self, a):
+        return [a for _ in range(self.n_agents)]
+    
+    def split(self, a):
+        return [a[i] for i in range(self.n_agents)]

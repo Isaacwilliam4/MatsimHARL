@@ -1,19 +1,16 @@
 import copy
-import gymnasium as gym
-
+from harl.envs.flowsim.flowsim import FlowSimEnv
 
 class GYMEnv:
     def __init__(self, args):
         self.args = copy.deepcopy(args)
-        self.env = gym.make(args["scenario"], **args)
+        self.env = FlowSimEnv(**args)
         self.n_agents = args["num_clusters"]
-        self.share_observation_space = [self.env.observation_space]
-        self.observation_space = [self.env.observation_space]
-        self.action_space = [self.env.action_space]
-        if self.env.action_space.__class__.__name__ == "Box":
-            self.discrete = False
-        else:
-            self.discrete = True
+        self.share_observation_space = self.env.observation_space
+        self.observation_space = self.env.observation_space
+        self.action_space = self.env.action_space
+        self.discrete = False
+
 
     def step(self, actions):
         """
@@ -51,4 +48,5 @@ class GYMEnv:
         self.env.close()
 
     def seed(self, seed):
-        self.env.unwrapped.seed(seed)
+        self.env.seed(seed)
+

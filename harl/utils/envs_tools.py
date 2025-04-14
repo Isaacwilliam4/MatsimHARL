@@ -264,3 +264,5 @@ def get_num_agents(env, env_args, envs):
         return envs.n_agents
     elif env == "lag":
         return envs.n_agents
+    elif env == "flowsim":
+        return envs.n_agents
