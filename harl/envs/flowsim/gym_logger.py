@@ -1,8 +1,13 @@
 from harl.common.base_logger import BaseLogger
+from torch.utils.tensorboard import SummaryWriter
 import time
 import numpy as np
 
 class FlowSimLogger(BaseLogger):
+    def __init__(self, args, algo_args, env_args, num_agents, writer : SummaryWriter, run_dir):
+        super().__init__(args, algo_args, env_args, num_agents, writer, run_dir)
+        self.best_avg_reward = -np.inf
+
     def get_task_name(self):
         return self.env_args["scenario"]
     
@@ -30,6 +35,7 @@ class FlowSimLogger(BaseLogger):
             )
         )
 
+        avg_step_rewards = critic_buffer.rewards.mean()
         critic_train_info["average_step_rewards"] = critic_buffer.rewards.mean()
 
         print(
@@ -45,9 +51,13 @@ class FlowSimLogger(BaseLogger):
                     aver_episode_rewards
                 )
             )
-            self.writter.add_scalars(
+            self.writer.add_scalars(
                 "train_episode_rewards",
                 {"aver_rewards": aver_episode_rewards},
                 self.total_num_steps,
             )
             self.done_episodes_rewards = []
+
+        self.writer.add_scalar("avg_reward/step", avg_step_rewards, self.total_num_steps)
+        self.writer.add_scalar("value_loss", critic_train_info["value_loss"], self.total_num_steps)
+

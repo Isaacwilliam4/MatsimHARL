@@ -87,10 +87,10 @@ def init_dir(env, env_args, algo, exp_name, seed, logger_path):
     os.makedirs(log_path, exist_ok=True)
     from tensorboardX import SummaryWriter
 
-    writter = SummaryWriter(log_path)
+    writer = SummaryWriter(log_path)
     models_path = os.path.join(results_path, "models")
     os.makedirs(models_path, exist_ok=True)
-    return results_path, log_path, models_path, writter
+    return results_path, log_path, models_path, writer
 
 
 def is_json_serializable(value):

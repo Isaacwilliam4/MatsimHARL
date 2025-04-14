@@ -47,7 +47,7 @@ class OnPolicyBaseRunner:
         set_seed(algo_args["seed"])
         self.device = init_device(algo_args["device"])
         if not self.algo_args["render"]["use_render"]:  # train, not render
-            self.run_dir, self.log_dir, self.save_dir, self.writter = init_dir(
+            self.run_dir, self.log_dir, self.save_dir, self.writer = init_dir(
                 args["env"],
                 env_args,
                 args["algo"],
@@ -163,7 +163,7 @@ class OnPolicyBaseRunner:
                 self.value_normalizer = None
 
             self.logger = LOGGER_REGISTRY[args["env"]](
-                args, algo_args, env_args, self.num_agents, self.writter, self.run_dir
+                args, algo_args, env_args, self.num_agents, self.writer, self.run_dir
             )
         if self.algo_args["train"]["model_dir"] is not None:  # restore model
             self.restore()
@@ -765,13 +765,13 @@ class OnPolicyBaseRunner:
                 self.value_normalizer.load_state_dict(value_normalizer_state_dict)
 
     def close(self):
-        """Close environment, writter, and logger."""
+        """Close environment, writer, and logger."""
         if self.algo_args["render"]["use_render"]:
             self.envs.close()
         else:
             self.envs.close()
             if self.algo_args["eval"]["use_eval"] and self.eval_envs is not self.envs:
                 self.eval_envs.close()
-            self.writter.export_scalars_to_json(str(self.log_dir + "/summary.json"))
-            self.writter.close()
+            self.writer.export_scalars_to_json(str(self.log_dir + "/summary.json"))
+            self.writer.close()
             self.logger.close()
