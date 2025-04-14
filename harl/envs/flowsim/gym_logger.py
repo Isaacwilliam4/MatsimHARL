@@ -2,14 +2,43 @@ from harl.common.base_logger import BaseLogger
 from torch.utils.tensorboard import SummaryWriter
 import time
 import numpy as np
+from harl.envs.flowsim.flowsim import FlowSimEnv
+from pathlib import Path
 
 class FlowSimLogger(BaseLogger):
     def __init__(self, args, algo_args, env_args, num_agents, writer : SummaryWriter, run_dir):
         super().__init__(args, algo_args, env_args, num_agents, writer, run_dir)
-        self.best_avg_reward = -np.inf
+        self.best_reward = -np.inf
 
     def get_task_name(self):
         return self.env_args["scenario"]
+    
+    def per_step(self, data):
+        (
+            obs,
+            share_obs,
+            rewards,
+            dones,
+            infos,
+            available_actions,
+            values,
+            actions,
+            action_log_probs,
+            rnn_states,
+            rnn_states_critic,
+        ) = data
+
+        best_rew_idx = np.argmax(rewards, axis=0)[0] 
+        best_rew = rewards[best_rew_idx][0]
+
+        if best_rew > self.best_reward:
+            self.best_reward = best_rew
+            best_env : FlowSimEnv = infos[best_rew_idx][0]['env']['graph_env_inst']
+            best_env.save_plans_from_flow_res()
+
+
+
+        
     
     def episode_log(
         self, actor_train_infos, critic_train_info, actor_buffer, critic_buffer
