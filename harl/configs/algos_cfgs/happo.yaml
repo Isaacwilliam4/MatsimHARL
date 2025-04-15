@@ -107,7 +107,7 @@ algo:
   # whether to use huber loss
   use_huber_loss: True
   # whether to use policy active masks
-  use_policy_active_masks: True
+  use_policy_active_masks: False
   # huber delta
   huber_delta: 10.0
   # method of aggregating the probability of multi-dimensional actions, choose from prod, mean

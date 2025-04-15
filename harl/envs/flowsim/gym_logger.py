@@ -90,6 +90,8 @@ class FlowSimLogger(BaseLogger):
             self.done_episodes_rewards = []
 
         self.writer.add_scalar("avg_reward/step", avg_step_rewards, self.total_num_steps)
+        self.writer.add_scalar("best_reward/step", self.best_reward, self.total_num_steps)
         self.writer.add_scalar("value_loss", critic_train_info["value_loss"], self.total_num_steps)
-        self.writer.add_scalar("value_loss", self.best_reward, self.total_num_steps)
+
+        self.log_train(actor_train_infos, critic_train_info)
 
