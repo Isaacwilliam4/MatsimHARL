@@ -7,8 +7,6 @@ from pathlib import Path
 import random
 import xml.etree.ElementTree as ET
 import os
-from graph_tool import topology
-from graph_tool import Graph
 from harl.envs.flowsim.cython.reward_core import sample_od_pairs
 from harl.envs.flowsim.cython.cy_bfs import bfs
 
@@ -95,9 +93,6 @@ class FlowSimEnv:
         self.od_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.n_agents)
         
         result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
-
-        
-
 
         for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
