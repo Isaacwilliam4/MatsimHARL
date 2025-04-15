@@ -5,6 +5,7 @@ from pathlib import Path
 from bidict import bidict
 import numpy as np
 from sklearn.cluster import KMeans
+import os
 
 class FlowSimDataset:
     """
@@ -146,7 +147,9 @@ class FlowSimDataset:
         self.sensor_idxs = [self.edge_mapping[edge_id] for edge_id in sensor_flows.keys()]
 
 
-    def save_clusters(self, filepath):
+    def save_clusters(self, filepath:Path):
+        if not os.path.exists(filepath.parent):
+            os.makedirs(filepath.parent)
         with open(filepath, "w") as f:
             for cluster_id, nodes in self.clusters.items():
                 f.write(f"{cluster_id}:")

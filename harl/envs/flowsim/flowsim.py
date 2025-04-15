@@ -10,7 +10,6 @@ import random
 import xml.etree.ElementTree as ET
 import os
 
-
 class FlowSimEnv:
     """
     A custom Gymnasium environment for Matsim graph-based simulations.
@@ -25,17 +24,9 @@ class FlowSimEnv:
             num_agents (int): Number of agents in the environment.
             save_dir (str): Directory to save outputs.
         """
-        save_dir = f"{save_dir}/{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}/"
-        os.makedirs(save_dir)
-        self.save_dir = save_dir
-        current_time = datetime.now()
-        self.time_string = current_time.strftime("%Y%m%d_%H%M%S_%f")
-
         # Initialize the dataset with custom variables
         self.network_path: Path = Path(network_path)
         self.counts_path: Path = Path(counts_path)
-        self.error_path: Path = Path(self.save_dir, "errors")
-        self.plan_output_path: Path = Path(self.save_dir, "plans_output.xml")
         self.num_clusters = num_clusters
         self.n_agents = num_clusters
 
@@ -44,7 +35,7 @@ class FlowSimEnv:
             self.counts_path, 
             self.num_clusters
         )
-        self.dataset.save_clusters(Path(self.save_dir, "clusters.txt"))
+        # self.dataset.save_clusters(Path(self.save_dir, "clusters.txt"))
         self.reward: float = 0
         self.best_reward = -np.inf
         
@@ -54,7 +45,7 @@ class FlowSimEnv:
         """
 
         self.done: bool = False
-        self.lock_file = Path(self.save_dir, "lockfile.lock")
+        # self.lock_file = Path(self.save_dir, "lockfile.lock")
         self.best_output_response = None
 
         self.flow_res = torch.zeros(self.dataset.target_graph.edge_attr.shape)
@@ -82,6 +73,8 @@ class FlowSimEnv:
                 shape=(24 * self.n_agents * self.n_agents,)
             )
         )
+
+
 
         # self.shortest_paths_set = set()
         # self.shortest_paths = np.zeros(self.dataset.target_graph)
@@ -129,13 +122,23 @@ class FlowSimEnv:
 
         self.flow_res = result
 
-        res = 1 / (torch.log(((result[self.dataset.sensor_idxs, :] - 
-                      self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :])**2).sum() + 1) + 1)
+        pred_flows = result[self.dataset.sensor_idxs, :]
+        target_flows = self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :]
+        abs_diff = torch.abs(pred_flows - target_flows).sum()
+        denominator = (torch.log(abs_diff + 1) + 1)
+
+        res = 1 / denominator
+        
+        # if not os.path.exists(self.initial_plan_output_path):
+        #     self.save_plans_from_flow_res(self.initial_plan_output_path)
         
         return res.item()
     
 
-    def save_plans_from_flow_res(self):
+    def save_plans_from_flow_res(self, filepath:Path):
+        if not os.path.exists(filepath.parent):
+            os.makedirs(filepath.parent)
+
         if len(self.od_result) > 0:
             plans = ET.Element("plans", attrib={"xml:lang": "de-CH"})
             person_ids = []
@@ -183,7 +186,7 @@ class FlowSimEnv:
                     )
 
             tree = ET.ElementTree(plans)
-            with open(self.plan_output_path, "wb") as f:
+            with open(filepath, "wb") as f:
                 f.write(b'<?xml version="1.0" ?>\n')
                 f.write(
                     b'<!DOCTYPE plans SYSTEM "http://www.matsim.org/files/dtd/plans_v4.dtd">\n'
@@ -211,19 +214,6 @@ class FlowSimEnv:
             self.done,
             dict(graph_env_inst=self),
         )
-
-    
-    def close(self):
-        """
-        Clean up resources used by the environment.
-
-        This method is optional and can be customized.
-        """
-        shutil.rmtree(self.dataset.config_path.parent)
-
-    def write_to_error(self, message):
-        with open(self.error_path, "a") as f:
-            f.write(message)
 
     def seed(self, seed: int):
         np.random.seed(seed)

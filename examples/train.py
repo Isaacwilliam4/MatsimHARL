@@ -2,7 +2,7 @@
 import argparse
 import json
 from harl.utils.configs_tools import get_defaults_yaml_args, update_args
-
+from datetime import datetime
 
 def main():
     """Main function."""
@@ -86,6 +86,9 @@ def main():
 
     # start training
     from harl.runners import RUNNER_REGISTRY
+
+    if args["env"] == "flowsim":
+        env_args["save_dir"] = f"./results/flowsim/outputs/{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
 
     runner = RUNNER_REGISTRY[args["algo"]](args, algo_args, env_args)
     runner.run()
