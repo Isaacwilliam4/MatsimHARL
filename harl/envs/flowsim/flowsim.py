@@ -1,14 +1,16 @@
 import numpy as np
-import shutil
 import torch
 from gymnasium.spaces import Box
 from harl.envs.flowsim.flowsim_dataset import FlowSimDataset
 from datetime import datetime
 from pathlib import Path
-import networkx as nx
 import random
 import xml.etree.ElementTree as ET
 import os
+from graph_tool import topology
+from graph_tool import Graph
+from harl.envs.flowsim.cython.reward_core import sample_od_pairs
+from harl.envs.flowsim.cython.cy_bfs import bfs
 
 class FlowSimEnv:
     """
@@ -35,7 +37,6 @@ class FlowSimEnv:
             self.counts_path, 
             self.num_clusters
         )
-        # self.dataset.save_clusters(Path(self.save_dir, "clusters.txt"))
         self.reward: float = 0
         self.best_reward = -np.inf
         
@@ -45,7 +46,6 @@ class FlowSimEnv:
         """
 
         self.done: bool = False
-        # self.lock_file = Path(self.save_dir, "lockfile.lock")
         self.best_output_response = None
 
         self.flow_res = torch.zeros(self.dataset.target_graph.edge_attr.shape)
@@ -74,10 +74,8 @@ class FlowSimEnv:
             )
         )
 
-
-
-        # self.shortest_paths_set = set()
-        # self.shortest_paths = np.zeros(self.dataset.target_graph)
+        self.edge_index = self.dataset.target_graph.edge_index.t().numpy().astype(np.int32)
+        self.num_nodes = len(self.dataset.target_graph.x)
         
 
     def reset(self, **kwargs):
@@ -92,33 +90,18 @@ class FlowSimEnv:
 
 
     def compute_reward(self, actions):
-        actions = actions.reshape(24, self.n_agents, self.n_agents)
-        result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
-        self.od_result = {}
-        nx_graph = nx.DiGraph()
-        nx_graph.add_nodes_from(self.dataset.target_graph.x.flatten().tolist())
-        nx_graph.add_edges_from(self.dataset.target_graph.edge_index.t().tolist())
-        for hour in range(actions.shape[0]):
-            for cluster1 in range(actions.shape[1]):
-                for cluster2 in range(actions.shape[2]):
-                    if cluster1 != cluster2:
-                        count = int(10**actions[hour][cluster1][cluster2])
-                        for _ in range(count):
-                            origin_node_idx = random.choice(
-                                self.dataset.clusters[cluster1]
-                            )
-                            dest_node_idx = random.choice(
-                                self.dataset.clusters[cluster2]
-                            )
-                            node_pair_key = (hour, origin_node_idx, dest_node_idx)
-                            
-                            if node_pair_key in self.od_result:
-                                self.od_result[node_pair_key] += 1
-                            else:
-                                self.od_result[node_pair_key] = 1
+        actions = actions.reshape(self.n_agents, self.n_agents, 24)
 
-                            path = nx.shortest_path(nx_graph, origin_node_idx, dest_node_idx)
-                            result[path, hour] += 1
+        self.od_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.n_agents)
+        
+        result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
+
+        
+
+
+        for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
+            edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
+            result[edge_path, hour] += count
 
         self.flow_res = result
 
@@ -128,10 +111,7 @@ class FlowSimEnv:
         denominator = (torch.log(abs_diff + 1) + 1)
 
         res = 1 / denominator
-        
-        # if not os.path.exists(self.initial_plan_output_path):
-        #     self.save_plans_from_flow_res(self.initial_plan_output_path)
-        
+
         return res.item()
     
 
