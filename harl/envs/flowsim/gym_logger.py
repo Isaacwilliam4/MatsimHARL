@@ -35,11 +35,11 @@ class FlowSimLogger(BaseLogger):
             self.best_reward = best_rew
             best_env : FlowSimEnv = infos[best_rew_idx][0]['env']['graph_env_inst']
             inital_output_path = Path(self.run_dir, "outputs","initial_output_plans.xml")
-            if not inital_output_path.exists():
-                # Save initial output for comparison
-                best_env.save_plans_from_flow_res(inital_output_path.absolute())
-                best_env.dataset.save_clusters(Path(self.run_dir, "outputs","clusters.txt").absolute())
-            best_env.save_plans_from_flow_res(Path(self.run_dir, "outputs","best_output.xml").absolute())
+            # if not inital_output_path.exists():
+            #     # Save initial output for comparison
+            #     best_env.save_plans_from_flow_res(inital_output_path.absolute())
+            #     best_env.dataset.save_clusters(Path(self.run_dir, "outputs","clusters.txt").absolute())
+            # best_env.save_plans_from_flow_res(Path(self.run_dir, "outputs","best_output.xml").absolute())
     
     def episode_log(
         self, actor_train_infos, critic_train_info, actor_buffer, critic_buffer

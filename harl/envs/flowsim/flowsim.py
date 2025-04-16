@@ -52,23 +52,23 @@ class FlowSimEnv:
         self.action_space : Box = self.repeat(
             Box(
                 low=-1,
-                high=2,
+                high=1,
                 shape=(self.num_clusters,)
             )
         )
 
         self.observation_space : Box = self.repeat(
             Box(
-                low=-1,
-                high=2,
+                low=0,
+                high=np.inf,
                 shape=(self.num_clusters,)
             )
         )
 
         self.share_observation_space : Box = \
             Box(
-                low=-1,
-                high=2,
+                low=0,
+                high=np.inf,
                 shape=(self.num_clusters * self.num_clusters * 24,)
             )
         
@@ -91,17 +91,15 @@ class FlowSimEnv:
     def compute_reward(self, actions):
         actions = actions.reshape(24, self.num_clusters, self.num_clusters)
 
-        self.od_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.num_clusters)
-        
-        result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
+        grad_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.num_clusters)
+        # self.od_result = {}
 
-        for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
+        for (hour, origin_node_idx, dest_node_idx), grad in grad_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
-            result[edge_path, hour] += count
+            self.flow_res[edge_path, hour] += grad
+            self.od_result((hour, origin_node_idx, dest_node_idx))
 
-        self.flow_res = result
-
-        pred_flows = result[self.dataset.sensor_idxs, :]
+        pred_flows = self.flow_res[self.dataset.sensor_idxs, :]
         target_flows = self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :]
         abs_diff = torch.abs(pred_flows - target_flows).sum()
         denominator = (torch.log(abs_diff + 1) + 1)
@@ -185,7 +183,7 @@ class FlowSimEnv:
             self.best_reward = self.reward
 
         return (
-            self.dataset.flow_tensor,
+            self.flow_res,
             self.reward,
             self.done,
             dict(graph_env_inst=self),

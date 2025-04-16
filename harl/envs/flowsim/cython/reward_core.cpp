@@ -2240,14 +2240,6 @@ static CYTHON_INLINE int __Pyx_PyDict_ContainsTF(PyObject* item, PyObject* dict,
     return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
 }
 
-/* PyIntBinop.proto */
-#if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, int inplace, int zerodivision_check);
-#else
-#define __Pyx_PyInt_AddObjC(op1, op2, intval, inplace, zerodivision_check)\
-    (inplace ? PyNumber_InPlaceAdd(op1, op2) : PyNumber_Add(op1, op2))
-#endif
-
 /* TypeImport.proto */
 #ifndef __PYX_HAVE_RT_ImportType_proto_3_0_12
 #define __PYX_HAVE_RT_ImportType_proto_3_0_12
@@ -2679,6 +2671,7 @@ static const char __pyx_k__6[] = "?";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_key[] = "key";
 static const char __pyx_k_dest[] = "dest";
+static const char __pyx_k_grad[] = "grad";
 static const char __pyx_k_hour[] = "hour";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
@@ -2794,6 +2787,7 @@ typedef struct {
   PyObject *__pyx_n_s_count;
   PyObject *__pyx_n_s_dest;
   PyObject *__pyx_n_s_dests;
+  PyObject *__pyx_n_s_grad;
   PyObject *__pyx_kp_s_harl_envs_flowsim_cython_reward;
   PyObject *__pyx_n_s_harl_envs_flowsim_cython_reward_2;
   PyObject *__pyx_n_s_hour;
@@ -2819,7 +2813,6 @@ typedef struct {
   PyObject *__pyx_n_s_spec;
   PyObject *__pyx_n_s_test;
   PyObject *__pyx_int_0;
-  PyObject *__pyx_int_1;
   PyObject *__pyx_tuple_;
   PyObject *__pyx_tuple__2;
   PyObject *__pyx_tuple__4;
@@ -2895,6 +2888,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_count);
   Py_CLEAR(clear_module_state->__pyx_n_s_dest);
   Py_CLEAR(clear_module_state->__pyx_n_s_dests);
+  Py_CLEAR(clear_module_state->__pyx_n_s_grad);
   Py_CLEAR(clear_module_state->__pyx_kp_s_harl_envs_flowsim_cython_reward);
   Py_CLEAR(clear_module_state->__pyx_n_s_harl_envs_flowsim_cython_reward_2);
   Py_CLEAR(clear_module_state->__pyx_n_s_hour);
@@ -2920,7 +2914,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_spec);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
   Py_CLEAR(clear_module_state->__pyx_int_0);
-  Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_tuple_);
   Py_CLEAR(clear_module_state->__pyx_tuple__2);
   Py_CLEAR(clear_module_state->__pyx_tuple__4);
@@ -2974,6 +2967,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_count);
   Py_VISIT(traverse_module_state->__pyx_n_s_dest);
   Py_VISIT(traverse_module_state->__pyx_n_s_dests);
+  Py_VISIT(traverse_module_state->__pyx_n_s_grad);
   Py_VISIT(traverse_module_state->__pyx_kp_s_harl_envs_flowsim_cython_reward);
   Py_VISIT(traverse_module_state->__pyx_n_s_harl_envs_flowsim_cython_reward_2);
   Py_VISIT(traverse_module_state->__pyx_n_s_hour);
@@ -2999,7 +2993,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_spec);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
   Py_VISIT(traverse_module_state->__pyx_int_0);
-  Py_VISIT(traverse_module_state->__pyx_int_1);
   Py_VISIT(traverse_module_state->__pyx_tuple_);
   Py_VISIT(traverse_module_state->__pyx_tuple__2);
   Py_VISIT(traverse_module_state->__pyx_tuple__4);
@@ -3087,6 +3080,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_count __pyx_mstate_global->__pyx_n_s_count
 #define __pyx_n_s_dest __pyx_mstate_global->__pyx_n_s_dest
 #define __pyx_n_s_dests __pyx_mstate_global->__pyx_n_s_dests
+#define __pyx_n_s_grad __pyx_mstate_global->__pyx_n_s_grad
 #define __pyx_kp_s_harl_envs_flowsim_cython_reward __pyx_mstate_global->__pyx_kp_s_harl_envs_flowsim_cython_reward
 #define __pyx_n_s_harl_envs_flowsim_cython_reward_2 __pyx_mstate_global->__pyx_n_s_harl_envs_flowsim_cython_reward_2
 #define __pyx_n_s_hour __pyx_mstate_global->__pyx_n_s_hour
@@ -3112,7 +3106,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_spec __pyx_mstate_global->__pyx_n_s_spec
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
 #define __pyx_int_0 __pyx_mstate_global->__pyx_int_0
-#define __pyx_int_1 __pyx_mstate_global->__pyx_int_1
 #define __pyx_tuple_ __pyx_mstate_global->__pyx_tuple_
 #define __pyx_tuple__2 __pyx_mstate_global->__pyx_tuple__2
 #define __pyx_tuple__4 __pyx_mstate_global->__pyx_tuple__4
@@ -4525,14 +4518,13 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
   int __pyx_v_cluster1;
   int __pyx_v_cluster2;
   int __pyx_v_hour;
-  int __pyx_v_count;
-  CYTHON_UNUSED int __pyx_v_i;
   int __pyx_v_origin;
   int __pyx_v_dest;
   PyObject *__pyx_v_od_result = 0;
   PyObject *__pyx_v_key = 0;
   PyObject *__pyx_v_origins = 0;
   PyObject *__pyx_v_dests = 0;
+  PyObject *__pyx_v_grad = NULL;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_actions;
   __Pyx_Buffer __pyx_pybuffer_actions;
   PyObject *__pyx_r = NULL;
@@ -4550,15 +4542,12 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
   Py_ssize_t __pyx_t_11;
   Py_ssize_t __pyx_t_12;
   PyObject *__pyx_t_13 = NULL;
-  int __pyx_t_14;
-  int __pyx_t_15;
-  int __pyx_t_16;
-  PyObject *__pyx_t_17 = NULL;
-  Py_ssize_t __pyx_t_18;
+  PyObject *__pyx_t_14 = NULL;
+  Py_ssize_t __pyx_t_15;
+  PyObject *__pyx_t_16 = NULL;
+  unsigned int __pyx_t_17;
+  int __pyx_t_18;
   PyObject *__pyx_t_19 = NULL;
-  unsigned int __pyx_t_20;
-  int __pyx_t_21;
-  PyObject *__pyx_t_22 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4624,7 +4613,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
  *                     continue
- *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ *                 grad = actions[hour, cluster1, cluster2]
  */
         __pyx_t_9 = (__pyx_v_cluster1 == __pyx_v_cluster2);
         if (__pyx_t_9) {
@@ -4633,7 +4622,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:
  *                     continue             # <<<<<<<<<<<<<<
- *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ *                 grad = actions[hour, cluster1, cluster2]
  *                 origins = cluster_lists[cluster1]
  */
           goto __pyx_L7_continue;
@@ -4643,25 +4632,28 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
  *                     continue
- *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ *                 grad = actions[hour, cluster1, cluster2]
  */
         }
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":28
  *                 if cluster1 == cluster2:
  *                     continue
- *                 count = int(10 ** actions[hour, cluster1, cluster2])             # <<<<<<<<<<<<<<
+ *                 grad = actions[hour, cluster1, cluster2]             # <<<<<<<<<<<<<<
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]
  */
         __pyx_t_10 = __pyx_v_hour;
         __pyx_t_11 = __pyx_v_cluster1;
         __pyx_t_12 = __pyx_v_cluster2;
-        __pyx_v_count = ((int)powf(10.0, (*__Pyx_BufPtrStrided3d(__pyx_t_5numpy_float32_t *, __pyx_pybuffernd_actions.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_actions.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_actions.diminfo[1].strides, __pyx_t_12, __pyx_pybuffernd_actions.diminfo[2].strides))));
+        __pyx_t_1 = PyFloat_FromDouble((*__Pyx_BufPtrStrided3d(__pyx_t_5numpy_float32_t *, __pyx_pybuffernd_actions.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_actions.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_actions.diminfo[1].strides, __pyx_t_12, __pyx_pybuffernd_actions.diminfo[2].strides))); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 28, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_XDECREF_SET(__pyx_v_grad, __pyx_t_1);
+        __pyx_t_1 = 0;
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":29
  *                     continue
- *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ *                 grad = actions[hour, cluster1, cluster2]
  *                 origins = cluster_lists[cluster1]             # <<<<<<<<<<<<<<
  *                 dests = cluster_lists[cluster2]
  * 
@@ -4680,11 +4672,11 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
         __pyx_t_13 = 0;
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":30
- *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ *                 grad = actions[hour, cluster1, cluster2]
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]             # <<<<<<<<<<<<<<
  * 
- *                 for i in range(count):
+ *                 origin = origins[np.random.randint(0, len(origins))]
  */
         if (unlikely(__pyx_v_cluster_lists == Py_None)) {
           PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
@@ -4702,211 +4694,198 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
         /* "harl/envs/flowsim/cython/reward_core.pyx":32
  *                 dests = cluster_lists[cluster2]
  * 
- *                 for i in range(count):             # <<<<<<<<<<<<<<
- *                     origin = origins[np.random.randint(0, len(origins))]
- *                     dest = dests[np.random.randint(0, len(dests))]
+ *                 origin = origins[np.random.randint(0, len(origins))]             # <<<<<<<<<<<<<<
+ *                 dest = dests[np.random.randint(0, len(dests))]
+ *                 key = (hour, origin, dest)
  */
-        __pyx_t_14 = __pyx_v_count;
-        __pyx_t_15 = __pyx_t_14;
-        for (__pyx_t_16 = 0; __pyx_t_16 < __pyx_t_15; __pyx_t_16+=1) {
-          __pyx_v_i = __pyx_t_16;
+        if (unlikely(__pyx_v_origins == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+          __PYX_ERR(0, 32, __pyx_L1_error)
+        }
+        __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_np); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_13);
+        __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_random); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_14);
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_randint); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_13);
+        __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+        if (unlikely(__pyx_v_origins == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
+          __PYX_ERR(0, 32, __pyx_L1_error)
+        }
+        __pyx_t_15 = __Pyx_PyList_GET_SIZE(__pyx_v_origins); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 32, __pyx_L1_error)
+        __pyx_t_14 = PyInt_FromSsize_t(__pyx_t_15); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_14);
+        __pyx_t_16 = NULL;
+        __pyx_t_17 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_13))) {
+          __pyx_t_16 = PyMethod_GET_SELF(__pyx_t_13);
+          if (likely(__pyx_t_16)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_13);
+            __Pyx_INCREF(__pyx_t_16);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_13, function);
+            __pyx_t_17 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[3] = {__pyx_t_16, __pyx_int_0, __pyx_t_14};
+          __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_13, __pyx_callargs+1-__pyx_t_17, 2+__pyx_t_17);
+          __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
+          __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+          if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 32, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_1);
+          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        }
+        __pyx_t_13 = __Pyx_PyObject_GetItem(__pyx_v_origins, __pyx_t_1); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_13);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_t_13); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 32, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        __pyx_v_origin = __pyx_t_18;
 
-          /* "harl/envs/flowsim/cython/reward_core.pyx":33
+        /* "harl/envs/flowsim/cython/reward_core.pyx":33
  * 
- *                 for i in range(count):
- *                     origin = origins[np.random.randint(0, len(origins))]             # <<<<<<<<<<<<<<
- *                     dest = dests[np.random.randint(0, len(dests))]
- *                     key = (hour, origin, dest)
+ *                 origin = origins[np.random.randint(0, len(origins))]
+ *                 dest = dests[np.random.randint(0, len(dests))]             # <<<<<<<<<<<<<<
+ *                 key = (hour, origin, dest)
+ *                 if key in od_result:
  */
-          if (unlikely(__pyx_v_origins == Py_None)) {
-            PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            __PYX_ERR(0, 33, __pyx_L1_error)
+        if (unlikely(__pyx_v_dests == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+          __PYX_ERR(0, 33, __pyx_L1_error)
+        }
+        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_random); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_14);
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_14, __pyx_n_s_randint); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+        if (unlikely(__pyx_v_dests == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
+          __PYX_ERR(0, 33, __pyx_L1_error)
+        }
+        __pyx_t_15 = __Pyx_PyList_GET_SIZE(__pyx_v_dests); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 33, __pyx_L1_error)
+        __pyx_t_14 = PyInt_FromSsize_t(__pyx_t_15); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_14);
+        __pyx_t_16 = NULL;
+        __pyx_t_17 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_1))) {
+          __pyx_t_16 = PyMethod_GET_SELF(__pyx_t_1);
+          if (likely(__pyx_t_16)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+            __Pyx_INCREF(__pyx_t_16);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_1, function);
+            __pyx_t_17 = 1;
           }
-          __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_np); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 33, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_13);
-          __pyx_t_17 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_random); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 33, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-          __pyx_t_13 = __Pyx_PyObject_GetAttrStr(__pyx_t_17, __pyx_n_s_randint); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 33, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_13);
-          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-          if (unlikely(__pyx_v_origins == Py_None)) {
-            PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-            __PYX_ERR(0, 33, __pyx_L1_error)
-          }
-          __pyx_t_18 = __Pyx_PyList_GET_SIZE(__pyx_v_origins); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 33, __pyx_L1_error)
-          __pyx_t_17 = PyInt_FromSsize_t(__pyx_t_18); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 33, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __pyx_t_19 = NULL;
-          __pyx_t_20 = 0;
-          #if CYTHON_UNPACK_METHODS
-          if (likely(PyMethod_Check(__pyx_t_13))) {
-            __pyx_t_19 = PyMethod_GET_SELF(__pyx_t_13);
-            if (likely(__pyx_t_19)) {
-              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_13);
-              __Pyx_INCREF(__pyx_t_19);
-              __Pyx_INCREF(function);
-              __Pyx_DECREF_SET(__pyx_t_13, function);
-              __pyx_t_20 = 1;
-            }
-          }
-          #endif
-          {
-            PyObject *__pyx_callargs[3] = {__pyx_t_19, __pyx_int_0, __pyx_t_17};
-            __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_13, __pyx_callargs+1-__pyx_t_20, 2+__pyx_t_20);
-            __Pyx_XDECREF(__pyx_t_19); __pyx_t_19 = 0;
-            __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-            if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_1);
-            __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-          }
-          __pyx_t_13 = __Pyx_PyObject_GetItem(__pyx_v_origins, __pyx_t_1); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 33, __pyx_L1_error)
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[3] = {__pyx_t_16, __pyx_int_0, __pyx_t_14};
+          __pyx_t_13 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_17, 2+__pyx_t_17);
+          __Pyx_XDECREF(__pyx_t_16); __pyx_t_16 = 0;
+          __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+          if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 33, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_13);
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_21 = __Pyx_PyInt_As_int(__pyx_t_13); if (unlikely((__pyx_t_21 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-          __pyx_v_origin = __pyx_t_21;
+        }
+        __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_dests, __pyx_t_13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
+        __pyx_t_18 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_18 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 33, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        __pyx_v_dest = __pyx_t_18;
 
-          /* "harl/envs/flowsim/cython/reward_core.pyx":34
- *                 for i in range(count):
- *                     origin = origins[np.random.randint(0, len(origins))]
- *                     dest = dests[np.random.randint(0, len(dests))]             # <<<<<<<<<<<<<<
- *                     key = (hour, origin, dest)
- *                     if key in od_result:
+        /* "harl/envs/flowsim/cython/reward_core.pyx":34
+ *                 origin = origins[np.random.randint(0, len(origins))]
+ *                 dest = dests[np.random.randint(0, len(dests))]
+ *                 key = (hour, origin, dest)             # <<<<<<<<<<<<<<
+ *                 if key in od_result:
+ *                     od_result[key] += grad
  */
-          if (unlikely(__pyx_v_dests == Py_None)) {
-            PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-            __PYX_ERR(0, 34, __pyx_L1_error)
-          }
-          __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_17 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_random); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_17, __pyx_n_s_randint); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-          if (unlikely(__pyx_v_dests == Py_None)) {
-            PyErr_SetString(PyExc_TypeError, "object of type 'NoneType' has no len()");
-            __PYX_ERR(0, 34, __pyx_L1_error)
-          }
-          __pyx_t_18 = __Pyx_PyList_GET_SIZE(__pyx_v_dests); if (unlikely(__pyx_t_18 == ((Py_ssize_t)-1))) __PYX_ERR(0, 34, __pyx_L1_error)
-          __pyx_t_17 = PyInt_FromSsize_t(__pyx_t_18); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __pyx_t_19 = NULL;
-          __pyx_t_20 = 0;
-          #if CYTHON_UNPACK_METHODS
-          if (likely(PyMethod_Check(__pyx_t_1))) {
-            __pyx_t_19 = PyMethod_GET_SELF(__pyx_t_1);
-            if (likely(__pyx_t_19)) {
-              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
-              __Pyx_INCREF(__pyx_t_19);
-              __Pyx_INCREF(function);
-              __Pyx_DECREF_SET(__pyx_t_1, function);
-              __pyx_t_20 = 1;
-            }
-          }
-          #endif
-          {
-            PyObject *__pyx_callargs[3] = {__pyx_t_19, __pyx_int_0, __pyx_t_17};
-            __pyx_t_13 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_20, 2+__pyx_t_20);
-            __Pyx_XDECREF(__pyx_t_19); __pyx_t_19 = 0;
-            __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-            if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 34, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_13);
-            __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          }
-          __pyx_t_1 = __Pyx_PyObject_GetItem(__pyx_v_dests, __pyx_t_13); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
-          __pyx_t_21 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_21 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 34, __pyx_L1_error)
-          __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-          __pyx_v_dest = __pyx_t_21;
+        __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_hour); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
+        __pyx_t_13 = __Pyx_PyInt_From_int(__pyx_v_origin); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 34, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_13);
+        __pyx_t_14 = __Pyx_PyInt_From_int(__pyx_v_dest); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 34, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_14);
+        __pyx_t_16 = PyTuple_New(3); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 34, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_16);
+        __Pyx_GIVEREF(__pyx_t_1);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_16, 0, __pyx_t_1)) __PYX_ERR(0, 34, __pyx_L1_error);
+        __Pyx_GIVEREF(__pyx_t_13);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_16, 1, __pyx_t_13)) __PYX_ERR(0, 34, __pyx_L1_error);
+        __Pyx_GIVEREF(__pyx_t_14);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_16, 2, __pyx_t_14)) __PYX_ERR(0, 34, __pyx_L1_error);
+        __pyx_t_1 = 0;
+        __pyx_t_13 = 0;
+        __pyx_t_14 = 0;
+        __Pyx_XDECREF_SET(__pyx_v_key, ((PyObject*)__pyx_t_16));
+        __pyx_t_16 = 0;
 
-          /* "harl/envs/flowsim/cython/reward_core.pyx":35
- *                     origin = origins[np.random.randint(0, len(origins))]
- *                     dest = dests[np.random.randint(0, len(dests))]
- *                     key = (hour, origin, dest)             # <<<<<<<<<<<<<<
- *                     if key in od_result:
- *                         od_result[key] += 1
+        /* "harl/envs/flowsim/cython/reward_core.pyx":35
+ *                 dest = dests[np.random.randint(0, len(dests))]
+ *                 key = (hour, origin, dest)
+ *                 if key in od_result:             # <<<<<<<<<<<<<<
+ *                     od_result[key] += grad
+ *                 else:
  */
-          __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_hour); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_1);
-          __pyx_t_13 = __Pyx_PyInt_From_int(__pyx_v_origin); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 35, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_13);
-          __pyx_t_17 = __Pyx_PyInt_From_int(__pyx_v_dest); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 35, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_17);
-          __pyx_t_19 = PyTuple_New(3); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 35, __pyx_L1_error)
-          __Pyx_GOTREF(__pyx_t_19);
-          __Pyx_GIVEREF(__pyx_t_1);
-          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_19, 0, __pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error);
-          __Pyx_GIVEREF(__pyx_t_13);
-          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_19, 1, __pyx_t_13)) __PYX_ERR(0, 35, __pyx_L1_error);
-          __Pyx_GIVEREF(__pyx_t_17);
-          if (__Pyx_PyTuple_SET_ITEM(__pyx_t_19, 2, __pyx_t_17)) __PYX_ERR(0, 35, __pyx_L1_error);
-          __pyx_t_1 = 0;
-          __pyx_t_13 = 0;
-          __pyx_t_17 = 0;
-          __Pyx_XDECREF_SET(__pyx_v_key, ((PyObject*)__pyx_t_19));
-          __pyx_t_19 = 0;
+        __pyx_t_9 = (__Pyx_PyDict_ContainsTF(__pyx_v_key, __pyx_v_od_result, Py_EQ)); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 35, __pyx_L1_error)
+        if (__pyx_t_9) {
 
           /* "harl/envs/flowsim/cython/reward_core.pyx":36
- *                     dest = dests[np.random.randint(0, len(dests))]
- *                     key = (hour, origin, dest)
- *                     if key in od_result:             # <<<<<<<<<<<<<<
- *                         od_result[key] += 1
- *                     else:
+ *                 key = (hour, origin, dest)
+ *                 if key in od_result:
+ *                     od_result[key] += grad             # <<<<<<<<<<<<<<
+ *                 else:
+ *                     od_result[key] = grad
  */
-          __pyx_t_9 = (__Pyx_PyDict_ContainsTF(__pyx_v_key, __pyx_v_od_result, Py_EQ)); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
-          if (__pyx_t_9) {
+          __Pyx_INCREF(__pyx_v_key);
+          __pyx_t_19 = __pyx_v_key;
+          __pyx_t_16 = __Pyx_PyDict_GetItem(__pyx_v_od_result, __pyx_t_19); if (unlikely(!__pyx_t_16)) __PYX_ERR(0, 36, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_16);
+          __pyx_t_14 = PyNumber_InPlaceAdd(__pyx_t_16, __pyx_v_grad); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 36, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_14);
+          __Pyx_DECREF(__pyx_t_16); __pyx_t_16 = 0;
+          if (unlikely((PyDict_SetItem(__pyx_v_od_result, __pyx_t_19, __pyx_t_14) < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
+          __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+          __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
 
-            /* "harl/envs/flowsim/cython/reward_core.pyx":37
- *                     key = (hour, origin, dest)
- *                     if key in od_result:
- *                         od_result[key] += 1             # <<<<<<<<<<<<<<
- *                     else:
- *                         od_result[key] = 1
+          /* "harl/envs/flowsim/cython/reward_core.pyx":35
+ *                 dest = dests[np.random.randint(0, len(dests))]
+ *                 key = (hour, origin, dest)
+ *                 if key in od_result:             # <<<<<<<<<<<<<<
+ *                     od_result[key] += grad
+ *                 else:
  */
-            __Pyx_INCREF(__pyx_v_key);
-            __pyx_t_22 = __pyx_v_key;
-            __pyx_t_19 = __Pyx_PyDict_GetItem(__pyx_v_od_result, __pyx_t_22); if (unlikely(!__pyx_t_19)) __PYX_ERR(0, 37, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_19);
-            __pyx_t_17 = __Pyx_PyInt_AddObjC(__pyx_t_19, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_17)) __PYX_ERR(0, 37, __pyx_L1_error)
-            __Pyx_GOTREF(__pyx_t_17);
-            __Pyx_DECREF(__pyx_t_19); __pyx_t_19 = 0;
-            if (unlikely((PyDict_SetItem(__pyx_v_od_result, __pyx_t_22, __pyx_t_17) < 0))) __PYX_ERR(0, 37, __pyx_L1_error)
-            __Pyx_DECREF(__pyx_t_17); __pyx_t_17 = 0;
-            __Pyx_DECREF(__pyx_t_22); __pyx_t_22 = 0;
+          goto __pyx_L10;
+        }
 
-            /* "harl/envs/flowsim/cython/reward_core.pyx":36
- *                     dest = dests[np.random.randint(0, len(dests))]
- *                     key = (hour, origin, dest)
- *                     if key in od_result:             # <<<<<<<<<<<<<<
- *                         od_result[key] += 1
- *                     else:
- */
-            goto __pyx_L12;
-          }
-
-          /* "harl/envs/flowsim/cython/reward_core.pyx":39
- *                         od_result[key] += 1
- *                     else:
- *                         od_result[key] = 1             # <<<<<<<<<<<<<<
+        /* "harl/envs/flowsim/cython/reward_core.pyx":38
+ *                     od_result[key] += grad
+ *                 else:
+ *                     od_result[key] = grad             # <<<<<<<<<<<<<<
  * 
  *     return od_result
  */
-          /*else*/ {
-            if (unlikely((PyDict_SetItem(__pyx_v_od_result, __pyx_v_key, __pyx_int_1) < 0))) __PYX_ERR(0, 39, __pyx_L1_error)
-          }
-          __pyx_L12:;
+        /*else*/ {
+          if (unlikely((PyDict_SetItem(__pyx_v_od_result, __pyx_v_key, __pyx_v_grad) < 0))) __PYX_ERR(0, 38, __pyx_L1_error)
         }
+        __pyx_L10:;
         __pyx_L7_continue:;
       }
     }
   }
 
-  /* "harl/envs/flowsim/cython/reward_core.pyx":41
- *                         od_result[key] = 1
+  /* "harl/envs/flowsim/cython/reward_core.pyx":40
+ *                     od_result[key] = grad
  * 
  *     return od_result             # <<<<<<<<<<<<<<
  */
@@ -4927,9 +4906,9 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_13);
-  __Pyx_XDECREF(__pyx_t_17);
+  __Pyx_XDECREF(__pyx_t_14);
+  __Pyx_XDECREF(__pyx_t_16);
   __Pyx_XDECREF(__pyx_t_19);
-  __Pyx_XDECREF(__pyx_t_22);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
@@ -4946,6 +4925,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
   __Pyx_XDECREF(__pyx_v_key);
   __Pyx_XDECREF(__pyx_v_origins);
   __Pyx_XDECREF(__pyx_v_dests);
+  __Pyx_XDECREF(__pyx_v_grad);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -4980,6 +4960,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_count, __pyx_k_count, sizeof(__pyx_k_count), 0, 0, 1, 1},
     {&__pyx_n_s_dest, __pyx_k_dest, sizeof(__pyx_k_dest), 0, 0, 1, 1},
     {&__pyx_n_s_dests, __pyx_k_dests, sizeof(__pyx_k_dests), 0, 0, 1, 1},
+    {&__pyx_n_s_grad, __pyx_k_grad, sizeof(__pyx_k_grad), 0, 0, 1, 1},
     {&__pyx_kp_s_harl_envs_flowsim_cython_reward, __pyx_k_harl_envs_flowsim_cython_reward, sizeof(__pyx_k_harl_envs_flowsim_cython_reward), 0, 0, 1, 0},
     {&__pyx_n_s_harl_envs_flowsim_cython_reward_2, __pyx_k_harl_envs_flowsim_cython_reward_2, sizeof(__pyx_k_harl_envs_flowsim_cython_reward_2), 0, 0, 1, 1},
     {&__pyx_n_s_hour, __pyx_k_hour, sizeof(__pyx_k_hour), 0, 0, 1, 1},
@@ -5051,10 +5032,10 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * @cython.wraparound(False)
  * def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] actions,
  */
-  __pyx_tuple__4 = PyTuple_Pack(14, __pyx_n_s_actions, __pyx_n_s_cluster_lists, __pyx_n_s_n_clusters, __pyx_n_s_cluster1, __pyx_n_s_cluster2, __pyx_n_s_hour, __pyx_n_s_count, __pyx_n_s_i, __pyx_n_s_origin, __pyx_n_s_dest, __pyx_n_s_od_result, __pyx_n_s_key, __pyx_n_s_origins, __pyx_n_s_dests); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(15, __pyx_n_s_actions, __pyx_n_s_cluster_lists, __pyx_n_s_n_clusters, __pyx_n_s_cluster1, __pyx_n_s_cluster2, __pyx_n_s_hour, __pyx_n_s_count, __pyx_n_s_i, __pyx_n_s_origin, __pyx_n_s_dest, __pyx_n_s_od_result, __pyx_n_s_key, __pyx_n_s_origins, __pyx_n_s_dests, __pyx_n_s_grad); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_harl_envs_flowsim_cython_reward, __pyx_n_s_sample_od_pairs, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_harl_envs_flowsim_cython_reward, __pyx_n_s_sample_od_pairs, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5066,7 +5047,6 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 static CYTHON_SMALL_CODE int __Pyx_InitConstants(void) {
   if (__Pyx_CreateStringTabAndInitStrings() < 0) __PYX_ERR(0, 1, __pyx_L1_error);
   __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -7604,139 +7584,6 @@ static PyObject *__Pyx_PyObject_GetItem(PyObject *obj, PyObject *key) {
         return __Pyx_PyObject_GetIndex(obj, key);
     }
     return __Pyx_PyObject_GetItem_Slow(obj, key);
-}
-#endif
-
-/* PyIntBinop */
-  #if !CYTHON_COMPILING_IN_PYPY
-static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, int inplace, int zerodivision_check) {
-    CYTHON_MAYBE_UNUSED_VAR(intval);
-    CYTHON_MAYBE_UNUSED_VAR(inplace);
-    CYTHON_UNUSED_VAR(zerodivision_check);
-    #if PY_MAJOR_VERSION < 3
-    if (likely(PyInt_CheckExact(op1))) {
-        const long b = intval;
-        long x;
-        long a = PyInt_AS_LONG(op1);
-        
-            x = (long)((unsigned long)a + (unsigned long)b);
-            if (likely((x^a) >= 0 || (x^b) >= 0))
-                return PyInt_FromLong(x);
-            return PyLong_Type.tp_as_number->nb_add(op1, op2);
-    }
-    #endif
-    #if CYTHON_USE_PYLONG_INTERNALS
-    if (likely(PyLong_CheckExact(op1))) {
-        const long b = intval;
-        long a, x;
-#ifdef HAVE_LONG_LONG
-        const PY_LONG_LONG llb = intval;
-        PY_LONG_LONG lla, llx;
-#endif
-        if (unlikely(__Pyx_PyLong_IsZero(op1))) {
-            return __Pyx_NewRef(op2);
-        }
-        if (likely(__Pyx_PyLong_IsCompact(op1))) {
-            a = __Pyx_PyLong_CompactValue(op1);
-        } else {
-            const digit* digits = __Pyx_PyLong_Digits(op1);
-            const Py_ssize_t size = __Pyx_PyLong_SignedDigitCount(op1);
-            switch (size) {
-                case -2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 2:
-                    if (8 * sizeof(long) - 1 > 2 * PyLong_SHIFT) {
-                        a = (long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 2 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 3:
-                    if (8 * sizeof(long) - 1 > 3 * PyLong_SHIFT) {
-                        a = (long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 3 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case -4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = -(PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                case 4:
-                    if (8 * sizeof(long) - 1 > 4 * PyLong_SHIFT) {
-                        a = (long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
-                        break;
-                    #ifdef HAVE_LONG_LONG
-                    } else if (8 * sizeof(PY_LONG_LONG) - 1 > 4 * PyLong_SHIFT) {
-                        lla = (PY_LONG_LONG) (((((((((unsigned PY_LONG_LONG)digits[3]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[2]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[1]) << PyLong_SHIFT) | (unsigned PY_LONG_LONG)digits[0]));
-                        goto long_long;
-                    #endif
-                    }
-                    CYTHON_FALLTHROUGH;
-                default: return PyLong_Type.tp_as_number->nb_add(op1, op2);
-            }
-        }
-                x = a + b;
-            return PyLong_FromLong(x);
-#ifdef HAVE_LONG_LONG
-        long_long:
-                llx = lla + llb;
-            return PyLong_FromLongLong(llx);
-#endif
-        
-        
-    }
-    #endif
-    if (PyFloat_CheckExact(op1)) {
-        const long b = intval;
-#if CYTHON_COMPILING_IN_LIMITED_API
-        double a = __pyx_PyFloat_AsDouble(op1);
-#else
-        double a = PyFloat_AS_DOUBLE(op1);
-#endif
-            double result;
-            
-            PyFPE_START_PROTECT("add", return NULL)
-            result = ((double)a) + (double)b;
-            PyFPE_END_PROTECT(result)
-            return PyFloat_FromDouble(result);
-    }
-    return (inplace ? PyNumber_InPlaceAdd : PyNumber_Add)(op1, op2);
 }
 #endif
 

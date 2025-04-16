@@ -25,17 +25,16 @@ def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] actions,
             for cluster2 in range(n_clusters):
                 if cluster1 == cluster2:
                     continue
-                count = int(10 ** actions[hour, cluster1, cluster2])
+                grad = actions[hour, cluster1, cluster2]
                 origins = cluster_lists[cluster1]
                 dests = cluster_lists[cluster2]
 
-                for i in range(count):
-                    origin = origins[np.random.randint(0, len(origins))]
-                    dest = dests[np.random.randint(0, len(dests))]
-                    key = (hour, origin, dest)
-                    if key in od_result:
-                        od_result[key] += 1
-                    else:
-                        od_result[key] = 1
+                origin = origins[np.random.randint(0, len(origins))]
+                dest = dests[np.random.randint(0, len(dests))]
+                key = (hour, origin, dest)
+                if key in od_result:
+                    od_result[key] += grad
+                else:
+                    od_result[key] = grad
 
     return od_result
