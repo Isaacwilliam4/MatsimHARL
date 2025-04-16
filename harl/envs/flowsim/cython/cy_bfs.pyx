@@ -1,5 +1,3 @@
-# cy_bfs.pyx
-
 from libcpp.vector cimport vector
 from libcpp.queue cimport queue
 import numpy as np
@@ -12,19 +10,17 @@ def bfs(int source, int target, int n_nodes,
         np.ndarray[np.int32_t, ndim=2] edge_index):
 
     cdef:
-        int i, u, v
+        int i, u, v, idx
         vector[vector[int]] adj = vector[vector[int]](n_nodes)
         vector[int] visited = vector[int](n_nodes, 0)
         vector[int] prev = vector[int](n_nodes, -1)
         queue[int] q
 
-    # Build adjacency list
+    # Build adjacency list (directed)
     for i in range(edge_index.shape[0]):
         u = edge_index[i, 0]
         v = edge_index[i, 1]
         adj[u].push_back(v)
-        # If undirected:
-        adj[v].push_back(u)
 
     # BFS
     visited[source] = 1
@@ -44,15 +40,22 @@ def bfs(int source, int target, int n_nodes,
                 prev[v] = u
                 q.push(v)
 
-    # Reconstruct path
-    cdef vector[int] path
+    # Reconstruct edge index path
+    cdef vector[int] edge_path
     v = target
-    while v != -1:
-        path.push_back(v)
-        v = prev[v]
-        
+    while prev[v] != -1:
+        u = prev[v]
+
+        # Find index in edge_index where (u, v) occurs
+        for i in range(edge_index.shape[0]):
+            if edge_index[i, 0] == u and edge_index[i, 1] == v:
+                edge_path.push_back(i)
+                break
+        v = u
+
+    # Reverse to get source → target order
     cdef vector[int] reversed_path
-    for i in range(path.size() - 1, -1, -1):
-        reversed_path.push_back(path[i])
+    for i in range(edge_path.size() - 1, -1, -1):
+        reversed_path.push_back(edge_path[i])
 
     return [i for i in reversed_path]

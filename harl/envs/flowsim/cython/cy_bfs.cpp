@@ -2631,9 +2631,9 @@ static const char __pyx_k__6[] = "?";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_adj[] = "adj";
 static const char __pyx_k_bfs[] = "bfs";
+static const char __pyx_k_idx[] = "idx";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
-static const char __pyx_k_path[] = "path";
 static const char __pyx_k_prev[] = "prev";
 static const char __pyx_k_spec[] = "__spec__";
 static const char __pyx_k_test[] = "__test__";
@@ -2644,6 +2644,7 @@ static const char __pyx_k_source[] = "source";
 static const char __pyx_k_target[] = "target";
 static const char __pyx_k_n_nodes[] = "n_nodes";
 static const char __pyx_k_visited[] = "visited";
+static const char __pyx_k_edge_path[] = "edge_path";
 static const char __pyx_k_edge_index[] = "edge_index";
 static const char __pyx_k_ImportError[] = "ImportError";
 static const char __pyx_k_initializing[] = "_initializing";
@@ -2734,9 +2735,11 @@ typedef struct {
   PyObject *__pyx_n_s_bfs;
   PyObject *__pyx_n_s_cline_in_traceback;
   PyObject *__pyx_n_s_edge_index;
+  PyObject *__pyx_n_s_edge_path;
   PyObject *__pyx_kp_s_harl_envs_flowsim_cython_cy_bfs;
   PyObject *__pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2;
   PyObject *__pyx_n_s_i;
+  PyObject *__pyx_n_s_idx;
   PyObject *__pyx_n_s_import;
   PyObject *__pyx_n_s_initializing;
   PyObject *__pyx_n_s_is_coroutine;
@@ -2747,7 +2750,6 @@ typedef struct {
   PyObject *__pyx_n_s_numpy;
   PyObject *__pyx_kp_u_numpy_core_multiarray_failed_to;
   PyObject *__pyx_kp_u_numpy_core_umath_failed_to_impor;
-  PyObject *__pyx_n_s_path;
   PyObject *__pyx_n_s_prev;
   PyObject *__pyx_n_s_q;
   PyObject *__pyx_n_s_range;
@@ -2829,9 +2831,11 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_bfs);
   Py_CLEAR(clear_module_state->__pyx_n_s_cline_in_traceback);
   Py_CLEAR(clear_module_state->__pyx_n_s_edge_index);
+  Py_CLEAR(clear_module_state->__pyx_n_s_edge_path);
   Py_CLEAR(clear_module_state->__pyx_kp_s_harl_envs_flowsim_cython_cy_bfs);
   Py_CLEAR(clear_module_state->__pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2);
   Py_CLEAR(clear_module_state->__pyx_n_s_i);
+  Py_CLEAR(clear_module_state->__pyx_n_s_idx);
   Py_CLEAR(clear_module_state->__pyx_n_s_import);
   Py_CLEAR(clear_module_state->__pyx_n_s_initializing);
   Py_CLEAR(clear_module_state->__pyx_n_s_is_coroutine);
@@ -2842,7 +2846,6 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_numpy);
   Py_CLEAR(clear_module_state->__pyx_kp_u_numpy_core_multiarray_failed_to);
   Py_CLEAR(clear_module_state->__pyx_kp_u_numpy_core_umath_failed_to_impor);
-  Py_CLEAR(clear_module_state->__pyx_n_s_path);
   Py_CLEAR(clear_module_state->__pyx_n_s_prev);
   Py_CLEAR(clear_module_state->__pyx_n_s_q);
   Py_CLEAR(clear_module_state->__pyx_n_s_range);
@@ -2902,9 +2905,11 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_bfs);
   Py_VISIT(traverse_module_state->__pyx_n_s_cline_in_traceback);
   Py_VISIT(traverse_module_state->__pyx_n_s_edge_index);
+  Py_VISIT(traverse_module_state->__pyx_n_s_edge_path);
   Py_VISIT(traverse_module_state->__pyx_kp_s_harl_envs_flowsim_cython_cy_bfs);
   Py_VISIT(traverse_module_state->__pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2);
   Py_VISIT(traverse_module_state->__pyx_n_s_i);
+  Py_VISIT(traverse_module_state->__pyx_n_s_idx);
   Py_VISIT(traverse_module_state->__pyx_n_s_import);
   Py_VISIT(traverse_module_state->__pyx_n_s_initializing);
   Py_VISIT(traverse_module_state->__pyx_n_s_is_coroutine);
@@ -2915,7 +2920,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_numpy);
   Py_VISIT(traverse_module_state->__pyx_kp_u_numpy_core_multiarray_failed_to);
   Py_VISIT(traverse_module_state->__pyx_kp_u_numpy_core_umath_failed_to_impor);
-  Py_VISIT(traverse_module_state->__pyx_n_s_path);
   Py_VISIT(traverse_module_state->__pyx_n_s_prev);
   Py_VISIT(traverse_module_state->__pyx_n_s_q);
   Py_VISIT(traverse_module_state->__pyx_n_s_range);
@@ -3009,9 +3013,11 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_bfs __pyx_mstate_global->__pyx_n_s_bfs
 #define __pyx_n_s_cline_in_traceback __pyx_mstate_global->__pyx_n_s_cline_in_traceback
 #define __pyx_n_s_edge_index __pyx_mstate_global->__pyx_n_s_edge_index
+#define __pyx_n_s_edge_path __pyx_mstate_global->__pyx_n_s_edge_path
 #define __pyx_kp_s_harl_envs_flowsim_cython_cy_bfs __pyx_mstate_global->__pyx_kp_s_harl_envs_flowsim_cython_cy_bfs
 #define __pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2 __pyx_mstate_global->__pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2
 #define __pyx_n_s_i __pyx_mstate_global->__pyx_n_s_i
+#define __pyx_n_s_idx __pyx_mstate_global->__pyx_n_s_idx
 #define __pyx_n_s_import __pyx_mstate_global->__pyx_n_s_import
 #define __pyx_n_s_initializing __pyx_mstate_global->__pyx_n_s_initializing
 #define __pyx_n_s_is_coroutine __pyx_mstate_global->__pyx_n_s_is_coroutine
@@ -3022,7 +3028,6 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_numpy __pyx_mstate_global->__pyx_n_s_numpy
 #define __pyx_kp_u_numpy_core_multiarray_failed_to __pyx_mstate_global->__pyx_kp_u_numpy_core_multiarray_failed_to
 #define __pyx_kp_u_numpy_core_umath_failed_to_impor __pyx_mstate_global->__pyx_kp_u_numpy_core_umath_failed_to_impor
-#define __pyx_n_s_path __pyx_mstate_global->__pyx_n_s_path
 #define __pyx_n_s_prev __pyx_mstate_global->__pyx_n_s_prev
 #define __pyx_n_s_q __pyx_mstate_global->__pyx_n_s_q
 #define __pyx_n_s_range __pyx_mstate_global->__pyx_n_s_range
@@ -4302,7 +4307,7 @@ static CYTHON_INLINE NPY_DATETIMEUNIT __pyx_f_5numpy_get_datetime64_unit(PyObjec
   return __pyx_r;
 }
 
-/* "harl/envs/flowsim/cython/cy_bfs.pyx":9
+/* "harl/envs/flowsim/cython/cy_bfs.pyx":7
  * cimport cython
  * 
  * @cython.boundscheck(False)             # <<<<<<<<<<<<<<
@@ -4372,7 +4377,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 7, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -4380,9 +4385,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 7, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 1); __PYX_ERR(0, 9, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 1); __PYX_ERR(0, 7, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -4390,9 +4395,9 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[2]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 7, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 2); __PYX_ERR(0, 9, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 2); __PYX_ERR(0, 7, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
@@ -4400,14 +4405,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[3]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 7, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 3); __PYX_ERR(0, 9, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, 3); __PYX_ERR(0, 7, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "bfs") < 0)) __PYX_ERR(0, 9, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "bfs") < 0)) __PYX_ERR(0, 7, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 4)) {
       goto __pyx_L5_argtuple_error;
@@ -4417,14 +4422,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[2] = __Pyx_Arg_FASTCALL(__pyx_args, 2);
       values[3] = __Pyx_Arg_FASTCALL(__pyx_args, 3);
     }
-    __pyx_v_source = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_source == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 11, __pyx_L3_error)
-    __pyx_v_target = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_target == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 11, __pyx_L3_error)
-    __pyx_v_n_nodes = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n_nodes == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 11, __pyx_L3_error)
+    __pyx_v_source = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_source == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+    __pyx_v_target = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_target == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
+    __pyx_v_n_nodes = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n_nodes == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 9, __pyx_L3_error)
     __pyx_v_edge_index = ((PyArrayObject *)values[3]);
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, __pyx_nargs); __PYX_ERR(0, 9, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("bfs", 1, 4, 4, __pyx_nargs); __PYX_ERR(0, 7, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -4438,7 +4443,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_edge_index), __pyx_ptype_5numpy_ndarray, 1, "edge_index", 0))) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_edge_index), __pyx_ptype_5numpy_ndarray, 1, "edge_index", 0))) __PYX_ERR(0, 10, __pyx_L1_error)
   __pyx_r = __pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(__pyx_self, __pyx_v_source, __pyx_v_target, __pyx_v_n_nodes, __pyx_v_edge_index);
 
   /* function exit code */
@@ -4464,7 +4469,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
   std::vector<int>  __pyx_v_visited;
   std::vector<int>  __pyx_v_prev;
   std::queue<int>  __pyx_v_q;
-  std::vector<int>  __pyx_v_path;
+  std::vector<int>  __pyx_v_edge_path;
   std::vector<int>  __pyx_v_reversed_path;
   int __pyx_7genexpr__pyx_v_i;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_edge_index;
@@ -4482,9 +4487,10 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
   int __pyx_t_9;
   std::vector<int> ::size_type __pyx_t_10;
   std::vector<int> ::size_type __pyx_t_11;
-  PyObject *__pyx_t_12 = NULL;
-  std::vector<int> ::iterator __pyx_t_13;
-  PyObject *__pyx_t_14 = NULL;
+  int __pyx_t_12;
+  PyObject *__pyx_t_13 = NULL;
+  std::vector<int> ::iterator __pyx_t_14;
+  PyObject *__pyx_t_15 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4495,13 +4501,13 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
   __pyx_pybuffernd_edge_index.rcbuffer = &__pyx_pybuffer_edge_index;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_edge_index.rcbuffer->pybuffer, (PyObject*)__pyx_v_edge_index, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int32_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 9, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_edge_index.rcbuffer->pybuffer, (PyObject*)__pyx_v_edge_index, &__Pyx_TypeInfo_nn___pyx_t_5numpy_int32_t, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) __PYX_ERR(0, 7, __pyx_L1_error)
   }
   __pyx_pybuffernd_edge_index.diminfo[0].strides = __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_edge_index.diminfo[0].shape = __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_edge_index.diminfo[1].strides = __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_edge_index.diminfo[1].shape = __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.shape[1];
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":16
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":14
  *     cdef:
- *         int i, u, v
+ *         int i, u, v, idx
  *         vector[vector[int]] adj = vector[vector[int]](n_nodes)             # <<<<<<<<<<<<<<
  *         vector[int] visited = vector[int](n_nodes, 0)
  *         vector[int] prev = vector[int](n_nodes, -1)
@@ -4510,12 +4516,12 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_1 = std::vector<std::vector<int> > (__pyx_v_n_nodes);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 16, __pyx_L1_error)
+    __PYX_ERR(0, 14, __pyx_L1_error)
   }
   __pyx_v_adj = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_1);
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":17
- *         int i, u, v
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":15
+ *         int i, u, v, idx
  *         vector[vector[int]] adj = vector[vector[int]](n_nodes)
  *         vector[int] visited = vector[int](n_nodes, 0)             # <<<<<<<<<<<<<<
  *         vector[int] prev = vector[int](n_nodes, -1)
@@ -4525,11 +4531,11 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_2 = std::vector<int> (__pyx_v_n_nodes, 0);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 17, __pyx_L1_error)
+    __PYX_ERR(0, 15, __pyx_L1_error)
   }
   __pyx_v_visited = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2);
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":18
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":16
  *         vector[vector[int]] adj = vector[vector[int]](n_nodes)
  *         vector[int] visited = vector[int](n_nodes, 0)
  *         vector[int] prev = vector[int](n_nodes, -1)             # <<<<<<<<<<<<<<
@@ -4540,25 +4546,25 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_2 = std::vector<int> (__pyx_v_n_nodes, -1);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 18, __pyx_L1_error)
+    __PYX_ERR(0, 16, __pyx_L1_error)
   }
   __pyx_v_prev = __PYX_STD_MOVE_IF_SUPPORTED(__pyx_t_2);
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":22
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":20
  * 
- *     # Build adjacency list
+ *     # Build adjacency list (directed)
  *     for i in range(edge_index.shape[0]):             # <<<<<<<<<<<<<<
  *         u = edge_index[i, 0]
  *         v = edge_index[i, 1]
  */
-  __pyx_t_3 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_edge_index)); if (unlikely(__pyx_t_3 == ((npy_intp *)NULL) && PyErr_Occurred())) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_t_3 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_edge_index)); if (unlikely(__pyx_t_3 == ((npy_intp *)NULL) && PyErr_Occurred())) __PYX_ERR(0, 20, __pyx_L1_error)
   __pyx_t_4 = (__pyx_t_3[0]);
   __pyx_t_5 = __pyx_t_4;
   for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
     __pyx_v_i = __pyx_t_6;
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":23
- *     # Build adjacency list
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":21
+ *     # Build adjacency list (directed)
  *     for i in range(edge_index.shape[0]):
  *         u = edge_index[i, 0]             # <<<<<<<<<<<<<<
  *         v = edge_index[i, 1]
@@ -4568,47 +4574,33 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_8 = 0;
     __pyx_v_u = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.buf, __pyx_t_7, __pyx_pybuffernd_edge_index.diminfo[0].strides, __pyx_t_8, __pyx_pybuffernd_edge_index.diminfo[1].strides));
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":24
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":22
  *     for i in range(edge_index.shape[0]):
  *         u = edge_index[i, 0]
  *         v = edge_index[i, 1]             # <<<<<<<<<<<<<<
  *         adj[u].push_back(v)
- *         # If undirected:
+ * 
  */
     __pyx_t_8 = __pyx_v_i;
     __pyx_t_7 = 1;
     __pyx_v_v = (*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_edge_index.diminfo[0].strides, __pyx_t_7, __pyx_pybuffernd_edge_index.diminfo[1].strides));
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":25
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":23
  *         u = edge_index[i, 0]
  *         v = edge_index[i, 1]
  *         adj[u].push_back(v)             # <<<<<<<<<<<<<<
- *         # If undirected:
- *         adj[v].push_back(u)
+ * 
+ *     # BFS
  */
     try {
       (__pyx_v_adj[__pyx_v_u]).push_back(__pyx_v_v);
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 25, __pyx_L1_error)
-    }
-
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":27
- *         adj[u].push_back(v)
- *         # If undirected:
- *         adj[v].push_back(u)             # <<<<<<<<<<<<<<
- * 
- *     # BFS
- */
-    try {
-      (__pyx_v_adj[__pyx_v_v]).push_back(__pyx_v_u);
-    } catch(...) {
-      __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 27, __pyx_L1_error)
+      __PYX_ERR(0, 23, __pyx_L1_error)
     }
   }
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":30
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":26
  * 
  *     # BFS
  *     visited[source] = 1             # <<<<<<<<<<<<<<
@@ -4617,7 +4609,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
   (__pyx_v_visited[__pyx_v_source]) = 1;
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":31
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":27
  *     # BFS
  *     visited[source] = 1
  *     q.push(source)             # <<<<<<<<<<<<<<
@@ -4626,7 +4618,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
   __pyx_v_q.push(__pyx_v_source);
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":33
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":29
  *     q.push(source)
  * 
  *     while not q.empty():             # <<<<<<<<<<<<<<
@@ -4637,7 +4629,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_9 = (!__pyx_v_q.empty());
     if (!__pyx_t_9) break;
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":34
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":30
  * 
  *     while not q.empty():
  *         u = q.front()             # <<<<<<<<<<<<<<
@@ -4646,7 +4638,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
     __pyx_v_u = __pyx_v_q.front();
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":35
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":31
  *     while not q.empty():
  *         u = q.front()
  *         q.pop()             # <<<<<<<<<<<<<<
@@ -4655,7 +4647,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
     __pyx_v_q.pop();
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":37
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":33
  *         q.pop()
  * 
  *         if u == target:             # <<<<<<<<<<<<<<
@@ -4665,7 +4657,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     __pyx_t_9 = (__pyx_v_u == __pyx_v_target);
     if (__pyx_t_9) {
 
-      /* "harl/envs/flowsim/cython/cy_bfs.pyx":38
+      /* "harl/envs/flowsim/cython/cy_bfs.pyx":34
  * 
  *         if u == target:
  *             break             # <<<<<<<<<<<<<<
@@ -4674,7 +4666,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
       goto __pyx_L6_break;
 
-      /* "harl/envs/flowsim/cython/cy_bfs.pyx":37
+      /* "harl/envs/flowsim/cython/cy_bfs.pyx":33
  *         q.pop()
  * 
  *         if u == target:             # <<<<<<<<<<<<<<
@@ -4683,7 +4675,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
     }
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":40
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":36
  *             break
  * 
  *         for i in range(adj[u].size()):             # <<<<<<<<<<<<<<
@@ -4695,7 +4687,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
     for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_11; __pyx_t_6+=1) {
       __pyx_v_i = __pyx_t_6;
 
-      /* "harl/envs/flowsim/cython/cy_bfs.pyx":41
+      /* "harl/envs/flowsim/cython/cy_bfs.pyx":37
  * 
  *         for i in range(adj[u].size()):
  *             v = adj[u][i]             # <<<<<<<<<<<<<<
@@ -4704,7 +4696,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
       __pyx_v_v = ((__pyx_v_adj[__pyx_v_u])[__pyx_v_i]);
 
-      /* "harl/envs/flowsim/cython/cy_bfs.pyx":42
+      /* "harl/envs/flowsim/cython/cy_bfs.pyx":38
  *         for i in range(adj[u].size()):
  *             v = adj[u][i]
  *             if not visited[v]:             # <<<<<<<<<<<<<<
@@ -4714,7 +4706,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
       __pyx_t_9 = (!((__pyx_v_visited[__pyx_v_v]) != 0));
       if (__pyx_t_9) {
 
-        /* "harl/envs/flowsim/cython/cy_bfs.pyx":43
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":39
  *             v = adj[u][i]
  *             if not visited[v]:
  *                 visited[v] = 1             # <<<<<<<<<<<<<<
@@ -4723,7 +4715,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
         (__pyx_v_visited[__pyx_v_v]) = 1;
 
-        /* "harl/envs/flowsim/cython/cy_bfs.pyx":44
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":40
  *             if not visited[v]:
  *                 visited[v] = 1
  *                 prev[v] = u             # <<<<<<<<<<<<<<
@@ -4732,16 +4724,16 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
  */
         (__pyx_v_prev[__pyx_v_v]) = __pyx_v_u;
 
-        /* "harl/envs/flowsim/cython/cy_bfs.pyx":45
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":41
  *                 visited[v] = 1
  *                 prev[v] = u
  *                 q.push(v)             # <<<<<<<<<<<<<<
  * 
- *     # Reconstruct path
+ *     # Reconstruct edge index path
  */
         __pyx_v_q.push(__pyx_v_v);
 
-        /* "harl/envs/flowsim/cython/cy_bfs.pyx":42
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":38
  *         for i in range(adj[u].size()):
  *             v = adj[u][i]
  *             if not visited[v]:             # <<<<<<<<<<<<<<
@@ -4753,101 +4745,165 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
   }
   __pyx_L6_break:;
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":49
- *     # Reconstruct path
- *     cdef vector[int] path
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":45
+ *     # Reconstruct edge index path
+ *     cdef vector[int] edge_path
  *     v = target             # <<<<<<<<<<<<<<
- *     while v != -1:
- *         path.push_back(v)
+ *     while prev[v] != -1:
+ *         u = prev[v]
  */
   __pyx_v_v = __pyx_v_target;
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":50
- *     cdef vector[int] path
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":46
+ *     cdef vector[int] edge_path
  *     v = target
- *     while v != -1:             # <<<<<<<<<<<<<<
- *         path.push_back(v)
- *         v = prev[v]
+ *     while prev[v] != -1:             # <<<<<<<<<<<<<<
+ *         u = prev[v]
+ * 
  */
   while (1) {
-    __pyx_t_9 = (__pyx_v_v != -1L);
+    __pyx_t_9 = ((__pyx_v_prev[__pyx_v_v]) != -1L);
     if (!__pyx_t_9) break;
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":51
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":47
  *     v = target
- *     while v != -1:
- *         path.push_back(v)             # <<<<<<<<<<<<<<
- *         v = prev[v]
+ *     while prev[v] != -1:
+ *         u = prev[v]             # <<<<<<<<<<<<<<
  * 
+ *         # Find index in edge_index where (u, v) occurs
  */
-    try {
-      __pyx_v_path.push_back(__pyx_v_v);
-    } catch(...) {
-      __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 51, __pyx_L1_error)
-    }
+    __pyx_v_u = (__pyx_v_prev[__pyx_v_v]);
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":52
- *     while v != -1:
- *         path.push_back(v)
- *         v = prev[v]             # <<<<<<<<<<<<<<
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":50
  * 
- *     cdef vector[int] reversed_path
+ *         # Find index in edge_index where (u, v) occurs
+ *         for i in range(edge_index.shape[0]):             # <<<<<<<<<<<<<<
+ *             if edge_index[i, 0] == u and edge_index[i, 1] == v:
+ *                 edge_path.push_back(i)
  */
-    __pyx_v_v = (__pyx_v_prev[__pyx_v_v]);
+    __pyx_t_3 = __pyx_f_5numpy_7ndarray_5shape_shape(((PyArrayObject *)__pyx_v_edge_index)); if (unlikely(__pyx_t_3 == ((npy_intp *)NULL) && PyErr_Occurred())) __PYX_ERR(0, 50, __pyx_L1_error)
+    __pyx_t_4 = (__pyx_t_3[0]);
+    __pyx_t_5 = __pyx_t_4;
+    for (__pyx_t_6 = 0; __pyx_t_6 < __pyx_t_5; __pyx_t_6+=1) {
+      __pyx_v_i = __pyx_t_6;
+
+      /* "harl/envs/flowsim/cython/cy_bfs.pyx":51
+ *         # Find index in edge_index where (u, v) occurs
+ *         for i in range(edge_index.shape[0]):
+ *             if edge_index[i, 0] == u and edge_index[i, 1] == v:             # <<<<<<<<<<<<<<
+ *                 edge_path.push_back(i)
+ *                 break
+ */
+      __pyx_t_7 = __pyx_v_i;
+      __pyx_t_8 = 0;
+      __pyx_t_12 = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.buf, __pyx_t_7, __pyx_pybuffernd_edge_index.diminfo[0].strides, __pyx_t_8, __pyx_pybuffernd_edge_index.diminfo[1].strides)) == __pyx_v_u);
+      if (__pyx_t_12) {
+      } else {
+        __pyx_t_9 = __pyx_t_12;
+        goto __pyx_L16_bool_binop_done;
+      }
+      __pyx_t_8 = __pyx_v_i;
+      __pyx_t_7 = 1;
+      __pyx_t_12 = ((*__Pyx_BufPtrStrided2d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_edge_index.rcbuffer->pybuffer.buf, __pyx_t_8, __pyx_pybuffernd_edge_index.diminfo[0].strides, __pyx_t_7, __pyx_pybuffernd_edge_index.diminfo[1].strides)) == __pyx_v_v);
+      __pyx_t_9 = __pyx_t_12;
+      __pyx_L16_bool_binop_done:;
+      if (__pyx_t_9) {
+
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":52
+ *         for i in range(edge_index.shape[0]):
+ *             if edge_index[i, 0] == u and edge_index[i, 1] == v:
+ *                 edge_path.push_back(i)             # <<<<<<<<<<<<<<
+ *                 break
+ *         v = u
+ */
+        try {
+          __pyx_v_edge_path.push_back(__pyx_v_i);
+        } catch(...) {
+          __Pyx_CppExn2PyErr();
+          __PYX_ERR(0, 52, __pyx_L1_error)
+        }
+
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":53
+ *             if edge_index[i, 0] == u and edge_index[i, 1] == v:
+ *                 edge_path.push_back(i)
+ *                 break             # <<<<<<<<<<<<<<
+ *         v = u
+ * 
+ */
+        goto __pyx_L14_break;
+
+        /* "harl/envs/flowsim/cython/cy_bfs.pyx":51
+ *         # Find index in edge_index where (u, v) occurs
+ *         for i in range(edge_index.shape[0]):
+ *             if edge_index[i, 0] == u and edge_index[i, 1] == v:             # <<<<<<<<<<<<<<
+ *                 edge_path.push_back(i)
+ *                 break
+ */
+      }
+    }
+    __pyx_L14_break:;
+
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":54
+ *                 edge_path.push_back(i)
+ *                 break
+ *         v = u             # <<<<<<<<<<<<<<
+ * 
+ *     # Reverse to get source  target order
+ */
+    __pyx_v_v = __pyx_v_u;
   }
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":55
- * 
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":58
+ *     # Reverse to get source  target order
  *     cdef vector[int] reversed_path
- *     for i in range(path.size() - 1, -1, -1):             # <<<<<<<<<<<<<<
- *         reversed_path.push_back(path[i])
+ *     for i in range(edge_path.size() - 1, -1, -1):             # <<<<<<<<<<<<<<
+ *         reversed_path.push_back(edge_path[i])
  * 
  */
-  for (__pyx_t_6 = (__pyx_v_path.size() - 1); __pyx_t_6 > -1; __pyx_t_6-=1) {
+  for (__pyx_t_6 = (__pyx_v_edge_path.size() - 1); __pyx_t_6 > -1; __pyx_t_6-=1) {
     __pyx_v_i = __pyx_t_6;
 
-    /* "harl/envs/flowsim/cython/cy_bfs.pyx":56
+    /* "harl/envs/flowsim/cython/cy_bfs.pyx":59
  *     cdef vector[int] reversed_path
- *     for i in range(path.size() - 1, -1, -1):
- *         reversed_path.push_back(path[i])             # <<<<<<<<<<<<<<
+ *     for i in range(edge_path.size() - 1, -1, -1):
+ *         reversed_path.push_back(edge_path[i])             # <<<<<<<<<<<<<<
  * 
  *     return [i for i in reversed_path]
  */
     try {
-      __pyx_v_reversed_path.push_back((__pyx_v_path[__pyx_v_i]));
+      __pyx_v_reversed_path.push_back((__pyx_v_edge_path[__pyx_v_i]));
     } catch(...) {
       __Pyx_CppExn2PyErr();
-      __PYX_ERR(0, 56, __pyx_L1_error)
+      __PYX_ERR(0, 59, __pyx_L1_error)
     }
   }
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":58
- *         reversed_path.push_back(path[i])
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":61
+ *         reversed_path.push_back(edge_path[i])
  * 
  *     return [i for i in reversed_path]             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
   { /* enter inner scope */
-    __pyx_t_12 = PyList_New(0); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 58, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_12);
-    __pyx_t_13 = __pyx_v_reversed_path.begin();
+    __pyx_t_13 = PyList_New(0); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_13);
+    __pyx_t_14 = __pyx_v_reversed_path.begin();
     for (;;) {
-      if (!(__pyx_t_13 != __pyx_v_reversed_path.end())) break;
-      __pyx_t_6 = *__pyx_t_13;
-      ++__pyx_t_13;
+      if (!(__pyx_t_14 != __pyx_v_reversed_path.end())) break;
+      __pyx_t_6 = *__pyx_t_14;
+      ++__pyx_t_14;
       __pyx_7genexpr__pyx_v_i = __pyx_t_6;
-      __pyx_t_14 = __Pyx_PyInt_From_int(__pyx_7genexpr__pyx_v_i); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 58, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_14);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_12, (PyObject*)__pyx_t_14))) __PYX_ERR(0, 58, __pyx_L1_error)
-      __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
+      __pyx_t_15 = __Pyx_PyInt_From_int(__pyx_7genexpr__pyx_v_i); if (unlikely(!__pyx_t_15)) __PYX_ERR(0, 61, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_15);
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_13, (PyObject*)__pyx_t_15))) __PYX_ERR(0, 61, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_15); __pyx_t_15 = 0;
     }
   } /* exit inner scope */
-  __pyx_r = __pyx_t_12;
-  __pyx_t_12 = 0;
+  __pyx_r = __pyx_t_13;
+  __pyx_t_13 = 0;
   goto __pyx_L0;
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":9
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":7
  * cimport cython
  * 
  * @cython.boundscheck(False)             # <<<<<<<<<<<<<<
@@ -4857,8 +4913,8 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_6cy_bfs_bfs(CYTHON_UNUSED
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_12);
-  __Pyx_XDECREF(__pyx_t_14);
+  __Pyx_XDECREF(__pyx_t_13);
+  __Pyx_XDECREF(__pyx_t_15);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_PyThreadState_declare
     __Pyx_PyThreadState_assign
@@ -4900,9 +4956,11 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_bfs, __pyx_k_bfs, sizeof(__pyx_k_bfs), 0, 0, 1, 1},
     {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
     {&__pyx_n_s_edge_index, __pyx_k_edge_index, sizeof(__pyx_k_edge_index), 0, 0, 1, 1},
+    {&__pyx_n_s_edge_path, __pyx_k_edge_path, sizeof(__pyx_k_edge_path), 0, 0, 1, 1},
     {&__pyx_kp_s_harl_envs_flowsim_cython_cy_bfs, __pyx_k_harl_envs_flowsim_cython_cy_bfs, sizeof(__pyx_k_harl_envs_flowsim_cython_cy_bfs), 0, 0, 1, 0},
     {&__pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2, __pyx_k_harl_envs_flowsim_cython_cy_bfs_2, sizeof(__pyx_k_harl_envs_flowsim_cython_cy_bfs_2), 0, 0, 1, 1},
     {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
+    {&__pyx_n_s_idx, __pyx_k_idx, sizeof(__pyx_k_idx), 0, 0, 1, 1},
     {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
     {&__pyx_n_s_initializing, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
     {&__pyx_n_s_is_coroutine, __pyx_k_is_coroutine, sizeof(__pyx_k_is_coroutine), 0, 0, 1, 1},
@@ -4913,7 +4971,6 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
     {&__pyx_kp_u_numpy_core_multiarray_failed_to, __pyx_k_numpy_core_multiarray_failed_to, sizeof(__pyx_k_numpy_core_multiarray_failed_to), 0, 1, 0, 0},
     {&__pyx_kp_u_numpy_core_umath_failed_to_impor, __pyx_k_numpy_core_umath_failed_to_impor, sizeof(__pyx_k_numpy_core_umath_failed_to_impor), 0, 1, 0, 0},
-    {&__pyx_n_s_path, __pyx_k_path, sizeof(__pyx_k_path), 0, 0, 1, 1},
     {&__pyx_n_s_prev, __pyx_k_prev, sizeof(__pyx_k_prev), 0, 0, 1, 1},
     {&__pyx_n_s_q, __pyx_k_q, sizeof(__pyx_k_q), 0, 0, 1, 1},
     {&__pyx_n_s_range, __pyx_k_range, sizeof(__pyx_k_range), 0, 0, 1, 1},
@@ -4931,7 +4988,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
 }
 /* #### Code section: cached_builtins ### */
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 22, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 20, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 984, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
@@ -4965,17 +5022,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":9
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":7
  * cimport cython
  * 
  * @cython.boundscheck(False)             # <<<<<<<<<<<<<<
  * @cython.wraparound(False)
  * def bfs(int source, int target, int n_nodes,
  */
-  __pyx_tuple__4 = PyTuple_Pack(14, __pyx_n_s_source, __pyx_n_s_target, __pyx_n_s_n_nodes, __pyx_n_s_edge_index, __pyx_n_s_i, __pyx_n_s_u, __pyx_n_s_v, __pyx_n_s_adj, __pyx_n_s_visited, __pyx_n_s_prev, __pyx_n_s_q, __pyx_n_s_path, __pyx_n_s_reversed_path, __pyx_n_s_i); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(15, __pyx_n_s_source, __pyx_n_s_target, __pyx_n_s_n_nodes, __pyx_n_s_edge_index, __pyx_n_s_i, __pyx_n_s_u, __pyx_n_s_v, __pyx_n_s_idx, __pyx_n_s_adj, __pyx_n_s_visited, __pyx_n_s_prev, __pyx_n_s_q, __pyx_n_s_edge_path, __pyx_n_s_reversed_path, __pyx_n_s_i); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_harl_envs_flowsim_cython_cy_bfs, __pyx_n_s_bfs, 9, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(4, 0, 0, 15, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_harl_envs_flowsim_cython_cy_bfs, __pyx_n_s_bfs, 7, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5398,34 +5455,34 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":5
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":3
  * from libcpp.vector cimport vector
  * from libcpp.queue cimport queue
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * cimport cython
  */
-  __pyx_t_2 = __Pyx_ImportDottedModule(__pyx_n_s_numpy, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_ImportDottedModule(__pyx_n_s_numpy, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_2) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_2) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "harl/envs/flowsim/cython/cy_bfs.pyx":9
+  /* "harl/envs/flowsim/cython/cy_bfs.pyx":7
  * cimport cython
  * 
  * @cython.boundscheck(False)             # <<<<<<<<<<<<<<
  * @cython.wraparound(False)
  * def bfs(int source, int target, int n_nodes,
  */
-  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_4harl_4envs_7flowsim_6cython_6cy_bfs_1bfs, 0, __pyx_n_s_bfs, NULL, __pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_CyFunction_New(&__pyx_mdef_4harl_4envs_7flowsim_6cython_6cy_bfs_1bfs, 0, __pyx_n_s_bfs, NULL, __pyx_n_s_harl_envs_flowsim_cython_cy_bfs_2, __pyx_d, ((PyObject *)__pyx_codeobj__5)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_bfs, __pyx_t_2) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_bfs, __pyx_t_2) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "harl/envs/flowsim/cython/cy_bfs.pyx":1
- * # cy_bfs.pyx             # <<<<<<<<<<<<<<
- * 
- * from libcpp.vector cimport vector
+ * from libcpp.vector cimport vector             # <<<<<<<<<<<<<<
+ * from libcpp.queue cimport queue
+ * import numpy as np
  */
   __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
