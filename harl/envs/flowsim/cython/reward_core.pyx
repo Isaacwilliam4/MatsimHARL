@@ -12,7 +12,7 @@ cimport cython
 @cython.wraparound(False)
 def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] actions,
                     dict cluster_lists,
-                    int n_agents):
+                    int n_clusters):
     cdef:
         int cluster1, cluster2, hour, count, i
         int origin, dest
@@ -20,12 +20,12 @@ def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] actions,
         tuple key
         list origins, dests
 
-    for cluster1 in range(n_agents):
-        for cluster2 in range(n_agents):
-            if cluster1 == cluster2:
-                continue
-            for hour in range(24):
-                count = int(10 ** actions[cluster1, cluster2, hour])
+    for hour in range(24):
+        for cluster1 in range(n_clusters):
+            for cluster2 in range(n_clusters):
+                if cluster1 == cluster2:
+                    continue
+                count = int(10 ** actions[hour, cluster1, cluster2])
                 origins = cluster_lists[cluster1]
                 dests = cluster_lists[cluster2]
 

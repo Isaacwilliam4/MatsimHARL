@@ -2696,8 +2696,8 @@ static const char __pyx_k_origins[] = "origins";
 static const char __pyx_k_randint[] = "randint";
 static const char __pyx_k_cluster1[] = "cluster1";
 static const char __pyx_k_cluster2[] = "cluster2";
-static const char __pyx_k_n_agents[] = "n_agents";
 static const char __pyx_k_od_result[] = "od_result";
+static const char __pyx_k_n_clusters[] = "n_clusters";
 static const char __pyx_k_ImportError[] = "ImportError";
 static const char __pyx_k_initializing[] = "_initializing";
 static const char __pyx_k_is_coroutine[] = "_is_coroutine";
@@ -2711,7 +2711,7 @@ static const char __pyx_k_numpy_core_multiarray_failed_to[] = "numpy.core.multia
 static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath failed to import";
 static const char __pyx_k_harl_envs_flowsim_cython_reward_2[] = "harl.envs.flowsim.cython.reward_core";
 /* #### Code section: decls ### */
-static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_actions, PyObject *__pyx_v_cluster_lists, int __pyx_v_n_agents); /* proto */
+static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_actions, PyObject *__pyx_v_cluster_lists, int __pyx_v_n_clusters); /* proto */
 /* #### Code section: late_includes ### */
 /* #### Code section: module_state ### */
 typedef struct {
@@ -2803,7 +2803,7 @@ typedef struct {
   PyObject *__pyx_n_s_is_coroutine;
   PyObject *__pyx_n_s_key;
   PyObject *__pyx_n_s_main;
-  PyObject *__pyx_n_s_n_agents;
+  PyObject *__pyx_n_s_n_clusters;
   PyObject *__pyx_n_s_name;
   PyObject *__pyx_n_s_np;
   PyObject *__pyx_n_s_numpy;
@@ -2904,7 +2904,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_is_coroutine);
   Py_CLEAR(clear_module_state->__pyx_n_s_key);
   Py_CLEAR(clear_module_state->__pyx_n_s_main);
-  Py_CLEAR(clear_module_state->__pyx_n_s_n_agents);
+  Py_CLEAR(clear_module_state->__pyx_n_s_n_clusters);
   Py_CLEAR(clear_module_state->__pyx_n_s_name);
   Py_CLEAR(clear_module_state->__pyx_n_s_np);
   Py_CLEAR(clear_module_state->__pyx_n_s_numpy);
@@ -2983,7 +2983,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_is_coroutine);
   Py_VISIT(traverse_module_state->__pyx_n_s_key);
   Py_VISIT(traverse_module_state->__pyx_n_s_main);
-  Py_VISIT(traverse_module_state->__pyx_n_s_n_agents);
+  Py_VISIT(traverse_module_state->__pyx_n_s_n_clusters);
   Py_VISIT(traverse_module_state->__pyx_n_s_name);
   Py_VISIT(traverse_module_state->__pyx_n_s_np);
   Py_VISIT(traverse_module_state->__pyx_n_s_numpy);
@@ -3096,7 +3096,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_is_coroutine __pyx_mstate_global->__pyx_n_s_is_coroutine
 #define __pyx_n_s_key __pyx_mstate_global->__pyx_n_s_key
 #define __pyx_n_s_main __pyx_mstate_global->__pyx_n_s_main
-#define __pyx_n_s_n_agents __pyx_mstate_global->__pyx_n_s_n_agents
+#define __pyx_n_s_n_clusters __pyx_mstate_global->__pyx_n_s_n_clusters
 #define __pyx_n_s_name __pyx_mstate_global->__pyx_n_s_name
 #define __pyx_n_s_np __pyx_mstate_global->__pyx_n_s_np
 #define __pyx_n_s_numpy __pyx_mstate_global->__pyx_n_s_numpy
@@ -4407,7 +4407,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
 ) {
   PyArrayObject *__pyx_v_actions = 0;
   PyObject *__pyx_v_cluster_lists = 0;
-  int __pyx_v_n_agents;
+  int __pyx_v_n_clusters;
   #if !CYTHON_METH_FASTCALL
   CYTHON_UNUSED Py_ssize_t __pyx_nargs;
   #endif
@@ -4428,7 +4428,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   #endif
   __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
   {
-    PyObject **__pyx_pyargnames[] = {&__pyx_n_s_actions,&__pyx_n_s_cluster_lists,&__pyx_n_s_n_agents,0};
+    PyObject **__pyx_pyargnames[] = {&__pyx_n_s_actions,&__pyx_n_s_cluster_lists,&__pyx_n_s_n_clusters,0};
     if (__pyx_kwds) {
       Py_ssize_t kw_args;
       switch (__pyx_nargs) {
@@ -4462,7 +4462,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
         }
         CYTHON_FALLTHROUGH;
         case  2:
-        if (likely((values[2] = __Pyx_GetKwValue_FASTCALL(__pyx_kwds, __pyx_kwvalues, __pyx_n_s_n_agents)) != 0)) {
+        if (likely((values[2] = __Pyx_GetKwValue_FASTCALL(__pyx_kwds, __pyx_kwvalues, __pyx_n_s_n_clusters)) != 0)) {
           (void)__Pyx_Arg_NewRef_FASTCALL(values[2]);
           kw_args--;
         }
@@ -4484,7 +4484,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     }
     __pyx_v_actions = ((PyArrayObject *)values[0]);
     __pyx_v_cluster_lists = ((PyObject*)values[1]);
-    __pyx_v_n_agents = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n_agents == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L3_error)
+    __pyx_v_n_clusters = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n_clusters == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 15, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
@@ -4504,7 +4504,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_actions), __pyx_ptype_5numpy_ndarray, 1, "actions", 0))) __PYX_ERR(0, 13, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_cluster_lists), (&PyDict_Type), 1, "cluster_lists", 1))) __PYX_ERR(0, 14, __pyx_L1_error)
-  __pyx_r = __pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(__pyx_self, __pyx_v_actions, __pyx_v_cluster_lists, __pyx_v_n_agents);
+  __pyx_r = __pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(__pyx_self, __pyx_v_actions, __pyx_v_cluster_lists, __pyx_v_n_clusters);
 
   /* function exit code */
   goto __pyx_L0;
@@ -4521,7 +4521,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_actions, PyObject *__pyx_v_cluster_lists, int __pyx_v_n_agents) {
+static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_pairs(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_actions, PyObject *__pyx_v_cluster_lists, int __pyx_v_n_clusters) {
   int __pyx_v_cluster1;
   int __pyx_v_cluster2;
   int __pyx_v_hour;
@@ -4588,80 +4588,80 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
   /* "harl/envs/flowsim/cython/reward_core.pyx":23
  *         list origins, dests
  * 
- *     for cluster1 in range(n_agents):             # <<<<<<<<<<<<<<
- *         for cluster2 in range(n_agents):
- *             if cluster1 == cluster2:
+ *     for hour in range(24):             # <<<<<<<<<<<<<<
+ *         for cluster1 in range(n_clusters):
+ *             for cluster2 in range(n_clusters):
  */
-  __pyx_t_2 = __pyx_v_n_agents;
-  __pyx_t_3 = __pyx_t_2;
-  for (__pyx_t_4 = 0; __pyx_t_4 < __pyx_t_3; __pyx_t_4+=1) {
-    __pyx_v_cluster1 = __pyx_t_4;
+  for (__pyx_t_2 = 0; __pyx_t_2 < 24; __pyx_t_2+=1) {
+    __pyx_v_hour = __pyx_t_2;
 
     /* "harl/envs/flowsim/cython/reward_core.pyx":24
  * 
- *     for cluster1 in range(n_agents):
- *         for cluster2 in range(n_agents):             # <<<<<<<<<<<<<<
- *             if cluster1 == cluster2:
- *                 continue
+ *     for hour in range(24):
+ *         for cluster1 in range(n_clusters):             # <<<<<<<<<<<<<<
+ *             for cluster2 in range(n_clusters):
+ *                 if cluster1 == cluster2:
  */
-    __pyx_t_5 = __pyx_v_n_agents;
-    __pyx_t_6 = __pyx_t_5;
-    for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
-      __pyx_v_cluster2 = __pyx_t_7;
+    __pyx_t_3 = __pyx_v_n_clusters;
+    __pyx_t_4 = __pyx_t_3;
+    for (__pyx_t_5 = 0; __pyx_t_5 < __pyx_t_4; __pyx_t_5+=1) {
+      __pyx_v_cluster1 = __pyx_t_5;
 
       /* "harl/envs/flowsim/cython/reward_core.pyx":25
- *     for cluster1 in range(n_agents):
- *         for cluster2 in range(n_agents):
- *             if cluster1 == cluster2:             # <<<<<<<<<<<<<<
- *                 continue
- *             for hour in range(24):
+ *     for hour in range(24):
+ *         for cluster1 in range(n_clusters):
+ *             for cluster2 in range(n_clusters):             # <<<<<<<<<<<<<<
+ *                 if cluster1 == cluster2:
+ *                     continue
  */
-      __pyx_t_8 = (__pyx_v_cluster1 == __pyx_v_cluster2);
-      if (__pyx_t_8) {
+      __pyx_t_6 = __pyx_v_n_clusters;
+      __pyx_t_7 = __pyx_t_6;
+      for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_7; __pyx_t_8+=1) {
+        __pyx_v_cluster2 = __pyx_t_8;
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":26
- *         for cluster2 in range(n_agents):
- *             if cluster1 == cluster2:
- *                 continue             # <<<<<<<<<<<<<<
- *             for hour in range(24):
- *                 count = int(10 ** actions[cluster1, cluster2, hour])
+ *         for cluster1 in range(n_clusters):
+ *             for cluster2 in range(n_clusters):
+ *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
+ *                     continue
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])
  */
-        goto __pyx_L5_continue;
+        __pyx_t_9 = (__pyx_v_cluster1 == __pyx_v_cluster2);
+        if (__pyx_t_9) {
 
-        /* "harl/envs/flowsim/cython/reward_core.pyx":25
- *     for cluster1 in range(n_agents):
- *         for cluster2 in range(n_agents):
- *             if cluster1 == cluster2:             # <<<<<<<<<<<<<<
- *                 continue
- *             for hour in range(24):
- */
-      }
-
-      /* "harl/envs/flowsim/cython/reward_core.pyx":27
- *             if cluster1 == cluster2:
- *                 continue
- *             for hour in range(24):             # <<<<<<<<<<<<<<
- *                 count = int(10 ** actions[cluster1, cluster2, hour])
+          /* "harl/envs/flowsim/cython/reward_core.pyx":27
+ *             for cluster2 in range(n_clusters):
+ *                 if cluster1 == cluster2:
+ *                     continue             # <<<<<<<<<<<<<<
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]
  */
-      for (__pyx_t_9 = 0; __pyx_t_9 < 24; __pyx_t_9+=1) {
-        __pyx_v_hour = __pyx_t_9;
+          goto __pyx_L7_continue;
+
+          /* "harl/envs/flowsim/cython/reward_core.pyx":26
+ *         for cluster1 in range(n_clusters):
+ *             for cluster2 in range(n_clusters):
+ *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
+ *                     continue
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])
+ */
+        }
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":28
- *                 continue
- *             for hour in range(24):
- *                 count = int(10 ** actions[cluster1, cluster2, hour])             # <<<<<<<<<<<<<<
+ *                 if cluster1 == cluster2:
+ *                     continue
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])             # <<<<<<<<<<<<<<
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]
  */
-        __pyx_t_10 = __pyx_v_cluster1;
-        __pyx_t_11 = __pyx_v_cluster2;
-        __pyx_t_12 = __pyx_v_hour;
+        __pyx_t_10 = __pyx_v_hour;
+        __pyx_t_11 = __pyx_v_cluster1;
+        __pyx_t_12 = __pyx_v_cluster2;
         __pyx_v_count = ((int)powf(10.0, (*__Pyx_BufPtrStrided3d(__pyx_t_5numpy_float32_t *, __pyx_pybuffernd_actions.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_actions.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_actions.diminfo[1].strides, __pyx_t_12, __pyx_pybuffernd_actions.diminfo[2].strides))));
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":29
- *             for hour in range(24):
- *                 count = int(10 ** actions[cluster1, cluster2, hour])
+ *                     continue
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]             # <<<<<<<<<<<<<<
  *                 dests = cluster_lists[cluster2]
  * 
@@ -4680,7 +4680,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
         __pyx_t_13 = 0;
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":30
- *                 count = int(10 ** actions[cluster1, cluster2, hour])
+ *                 count = int(10 ** actions[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]             # <<<<<<<<<<<<<<
  * 
@@ -4857,8 +4857,8 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *                         od_result[key] += 1
  *                     else:
  */
-          __pyx_t_8 = (__Pyx_PyDict_ContainsTF(__pyx_v_key, __pyx_v_od_result, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
-          if (__pyx_t_8) {
+          __pyx_t_9 = (__Pyx_PyDict_ContainsTF(__pyx_v_key, __pyx_v_od_result, Py_EQ)); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 36, __pyx_L1_error)
+          if (__pyx_t_9) {
 
             /* "harl/envs/flowsim/cython/reward_core.pyx":37
  *                     key = (hour, origin, dest)
@@ -4900,8 +4900,8 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
           }
           __pyx_L12:;
         }
+        __pyx_L7_continue:;
       }
-      __pyx_L5_continue:;
     }
   }
 
@@ -4989,7 +4989,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_is_coroutine, __pyx_k_is_coroutine, sizeof(__pyx_k_is_coroutine), 0, 0, 1, 1},
     {&__pyx_n_s_key, __pyx_k_key, sizeof(__pyx_k_key), 0, 0, 1, 1},
     {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
-    {&__pyx_n_s_n_agents, __pyx_k_n_agents, sizeof(__pyx_k_n_agents), 0, 0, 1, 1},
+    {&__pyx_n_s_n_clusters, __pyx_k_n_clusters, sizeof(__pyx_k_n_clusters), 0, 0, 1, 1},
     {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
     {&__pyx_n_s_np, __pyx_k_np, sizeof(__pyx_k_np), 0, 0, 1, 1},
     {&__pyx_n_s_numpy, __pyx_k_numpy, sizeof(__pyx_k_numpy), 0, 0, 1, 1},
@@ -5051,7 +5051,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * @cython.wraparound(False)
  * def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] actions,
  */
-  __pyx_tuple__4 = PyTuple_Pack(14, __pyx_n_s_actions, __pyx_n_s_cluster_lists, __pyx_n_s_n_agents, __pyx_n_s_cluster1, __pyx_n_s_cluster2, __pyx_n_s_hour, __pyx_n_s_count, __pyx_n_s_i, __pyx_n_s_origin, __pyx_n_s_dest, __pyx_n_s_od_result, __pyx_n_s_key, __pyx_n_s_origins, __pyx_n_s_dests); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(14, __pyx_n_s_actions, __pyx_n_s_cluster_lists, __pyx_n_s_n_clusters, __pyx_n_s_cluster1, __pyx_n_s_cluster2, __pyx_n_s_hour, __pyx_n_s_count, __pyx_n_s_i, __pyx_n_s_origin, __pyx_n_s_dest, __pyx_n_s_od_result, __pyx_n_s_key, __pyx_n_s_origins, __pyx_n_s_dests); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 11, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
   __pyx_codeobj__5 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__4, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_harl_envs_flowsim_cython_reward, __pyx_n_s_sample_od_pairs, 11, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__5)) __PYX_ERR(0, 11, __pyx_L1_error)

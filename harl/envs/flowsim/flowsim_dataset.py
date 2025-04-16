@@ -47,7 +47,7 @@ class FlowSimDataset:
         )  #: key: edge attribute name, value: index in edge attribute list
         self.target_graph: Data = Data()
         self.parse_network()
-        self.flow_tensor = torch.rand(num_clusters, 24*num_clusters)
+        self.flow_tensor = torch.rand(24*num_clusters, num_clusters)
 
     def len(self):
         """

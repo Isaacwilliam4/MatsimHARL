@@ -28,7 +28,8 @@ class FlowSimEnv:
         self.network_path: Path = Path(network_path)
         self.counts_path: Path = Path(counts_path)
         self.num_clusters = num_clusters
-        self.n_agents = num_clusters
+        # each agent monitors a single hour for every cluster
+        self.n_agents = num_clusters*24
 
         self.dataset = FlowSimDataset(
             self.network_path,
@@ -52,7 +53,7 @@ class FlowSimEnv:
             Box(
                 low=-1,
                 high=2,
-                shape=(24 * self.n_agents,)
+                shape=(self.num_clusters,)
             )
         )
 
@@ -60,17 +61,17 @@ class FlowSimEnv:
             Box(
                 low=-1,
                 high=2,
-                shape=(24 * self.n_agents,)
+                shape=(self.num_clusters,)
             )
         )
 
-        self.share_observation_space : Box = self.repeat(
+        self.share_observation_space : Box = \
             Box(
                 low=-1,
                 high=2,
-                shape=(24 * self.n_agents * self.n_agents,)
+                shape=(self.num_clusters * self.num_clusters * 24,)
             )
-        )
+        
 
         self.edge_index = self.dataset.target_graph.edge_index.t().numpy().astype(np.int32)
         self.num_nodes = len(self.dataset.target_graph.x)
@@ -88,9 +89,9 @@ class FlowSimEnv:
 
 
     def compute_reward(self, actions):
-        actions = actions.reshape(self.n_agents, self.n_agents, 24)
+        actions = actions.reshape(24, self.num_clusters, self.num_clusters)
 
-        self.od_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.n_agents)
+        self.od_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.num_clusters)
         
         result = torch.zeros(self.dataset.target_graph.edge_attr.shape)
 

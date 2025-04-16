@@ -6,7 +6,7 @@ class GYMEnv:
     def __init__(self, args):
         self.args = copy.deepcopy(args)
         self.env = FlowSimEnv(**args)
-        self.n_agents = args["num_clusters"]
+        self.n_agents = self.env.n_agents
         self.share_observation_space = self.env.observation_space
         self.observation_space = self.env.observation_space
         self.action_space = self.env.action_space

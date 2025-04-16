@@ -13,7 +13,7 @@ device:
   torch_threads: 4
 train:
   # number of parallel environments for training data collection
-  n_rollout_threads: 1
+  n_rollout_threads: 32
   # number of total training steps
   num_env_steps: 10000000
   # number of steps per environment per training data collection
@@ -45,7 +45,7 @@ render:
 model:
   # network parameters
   # hidden sizes for mlp module in the network
-  hidden_sizes: [128, 128]
+  hidden_sizes: [64, 32]
   # activation function, choose from sigmoid, tanh, relu, leaky_relu, selu
   activation_func: relu
   # whether to use feature normalization
