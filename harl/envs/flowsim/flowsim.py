@@ -75,6 +75,7 @@ class FlowSimEnv:
 
         self.edge_index = self.dataset.target_graph.edge_index.t().numpy().astype(np.int32)
         self.num_nodes = len(self.dataset.target_graph.x)
+        self.flow_tensor = np.random.rand(24, self.num_clusters, self.num_clusters)
         
 
     def reset(self, **kwargs):
@@ -85,19 +86,16 @@ class FlowSimEnv:
             np.ndarray: Initial state of the environment.
             dict: Additional information.
         """
-        return self.dataset.flow_tensor.numpy()
+        return self.flow_tensor
 
 
-    def compute_reward(self, actions):
-        actions = actions.reshape(24, self.num_clusters, self.num_clusters)
-
-        grad_result = sample_od_pairs(actions.astype(np.float32), self.dataset.clusters, self.num_clusters)
+    def compute_reward(self):
+        self.od_result = sample_od_pairs(self.flow_tensor.astype(np.float32), self.dataset.clusters, self.num_clusters)
         # self.od_result = {}
 
-        for (hour, origin_node_idx, dest_node_idx), grad in grad_result.items():
+        for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
-            self.flow_res[edge_path, hour] += grad
-            self.od_result((hour, origin_node_idx, dest_node_idx))
+            self.flow_res[edge_path, hour] += count
 
         pred_flows = self.flow_res[self.dataset.sensor_idxs, :]
         target_flows = self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :]
@@ -177,7 +175,7 @@ class FlowSimEnv:
         Returns:
             tuple: Next state, reward, done flags, and additional info.
         """
-        self.dataset.flow_tensor = actions
+        self.flow_tensor += actions
         self.reward = self.compute_reward(actions)
         if self.reward > self.best_reward:
             self.best_reward = self.reward
