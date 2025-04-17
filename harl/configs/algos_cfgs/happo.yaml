@@ -13,7 +13,7 @@ device:
   torch_threads: 4
 train:
   # number of parallel environments for training data collection
-  n_rollout_threads: 32
+  n_rollout_threads: 1
   # number of total training steps
   num_env_steps: 10000000
   # number of steps per environment per training data collection
@@ -53,7 +53,7 @@ model:
   # initialization method for network parameters, choose from xavier_uniform_, orthogonal_, ...
   initialization_method: orthogonal_
   # gain of the output layer of the network.
-  gain: 0.01
+  gain: 0
   # recurrent parameters
   # whether to use rnn policy (data is not chunked for training)
   use_naive_recurrent_policy: False
@@ -65,7 +65,7 @@ model:
   data_chunk_length: 1
   # optimizer parameters
   # actor learning rate
-  lr: 0.0005
+  lr: 1
   # critic learning rate
   critic_lr: 0.0005
   # eps in Adam
@@ -73,9 +73,9 @@ model:
   # weight_decay in Adam
   weight_decay: 0
   # parameters of diagonal Gaussian distribution
-  std_x_coef: 1
+  std_x_coef: 0.000001
   # parameters of diagonal Gaussian distribution
-  std_y_coef: 0.5
+  std_y_coef: 0.000001
 algo:
   # ppo parameters
   # number of epochs for actor update
@@ -115,7 +115,7 @@ algo:
   # whether to share parameter among actors
   share_param: False
   # whether to use a fixed optimisation order
-  fixed_order: True
+  fixed_order: False
 logger:
   # logging directory
   log_dir: "./results"

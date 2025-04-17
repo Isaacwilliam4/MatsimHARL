@@ -1,8 +1,8 @@
 # network_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/tinytown_scenario_example_flow/tiny_town_network.xml"
 # counts_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/tinytown_scenario_example_flow/tiny_town_counts.xml"
-network_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/basic_graph_example/complete_graph_network.xml"
-counts_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/basic_graph_example/basic_graph_counts.xml"
+network_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/basic_graph_example/more_basic_network.xml"
+counts_path: "/home/isaacp/repos/EvMatsim/contribs/ev/scenario_examples/basic_graph_example/more_basic_graph_counts.xml"
 scenario: "FlowSimEnv_v0"
 state_type: "FP"
-num_clusters: 6
+num_clusters: 2
 seed: 42

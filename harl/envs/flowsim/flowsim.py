@@ -15,7 +15,7 @@ class FlowSimEnv:
     A custom Gymnasium environment for Matsim graph-based simulations.
     """
 
-    def __init__(self, network_path, counts_path, save_dir, num_clusters, seed, **kwargs):
+    def __init__(self, network_path, counts_path, save_dir, num_clusters, seed, t=24, **kwargs):
         """
         Initialize the environment.
 
@@ -25,11 +25,12 @@ class FlowSimEnv:
             save_dir (str): Directory to save outputs.
         """
         # Initialize the dataset with custom variables
+        self.t = t
         self.network_path: Path = Path(network_path)
         self.counts_path: Path = Path(counts_path)
         self.num_clusters = num_clusters
         # each agent monitors a single hour for every cluster
-        self.n_agents = num_clusters*24
+        self.n_agents = num_clusters*t
 
         self.dataset = FlowSimDataset(
             self.network_path,
@@ -47,12 +48,10 @@ class FlowSimEnv:
         self.done: bool = False
         self.best_output_response = None
 
-        self.flow_res = torch.zeros(self.dataset.target_graph.edge_attr.shape)
-
         self.action_space : Box = self.repeat(
             Box(
-                low=-1,
-                high=1,
+                low=-.01,
+                high=.01,
                 shape=(self.num_clusters,)
             )
         )
@@ -69,14 +68,18 @@ class FlowSimEnv:
             Box(
                 low=0,
                 high=np.inf,
-                shape=(self.num_clusters * self.num_clusters * 24,)
+                shape=(self.num_clusters * self.num_clusters * t,)
             )
         
 
         self.edge_index = self.dataset.target_graph.edge_index.t().numpy().astype(np.int32)
         self.num_nodes = len(self.dataset.target_graph.x)
-        self.flow_tensor = np.random.rand(24, self.num_clusters, self.num_clusters)
-        
+        # shape (24, n_clusters, n_clusters)
+        self.cluster_flow_tensor = np.random.rand(t, self.num_clusters, self.num_clusters)
+        # shape (n_edges, 24)
+        self.graph_flow_tensor = np.zeros_like(self.dataset.target_graph.edge_attr)
+
+        self.target_flows = self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :].numpy()
 
     def reset(self, **kwargs):
         """
@@ -86,25 +89,24 @@ class FlowSimEnv:
             np.ndarray: Initial state of the environment.
             dict: Additional information.
         """
-        return self.flow_tensor
+        return self.cluster_flow_tensor.reshape(self.t*self.num_clusters, self.num_clusters)
 
 
     def compute_reward(self):
-        self.od_result = sample_od_pairs(self.flow_tensor.astype(np.float32), self.dataset.clusters, self.num_clusters)
-        # self.od_result = {}
+        flows = np.round(self.cluster_flow_tensor, 0).astype(np.int32)
+        self.od_result = sample_od_pairs(flows, self.dataset.clusters, self.num_clusters)
 
         for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
-            self.flow_res[edge_path, hour] += count
+            self.graph_flow_tensor[edge_path, hour] += count
 
-        pred_flows = self.flow_res[self.dataset.sensor_idxs, :]
-        target_flows = self.dataset.target_graph.edge_attr[self.dataset.sensor_idxs, :]
-        abs_diff = torch.abs(pred_flows - target_flows).sum()
-        denominator = (torch.log(abs_diff + 1) + 1)
+        pred_flows = self.graph_flow_tensor[self.dataset.sensor_idxs, :]
+        abs_diff = np.abs(pred_flows - self.target_flows).sum()
+        denominator = (np.log(abs_diff + 1) + 1)
 
         res = 1 / denominator
 
-        return res.item()
+        return res
     
 
     def save_plans_from_flow_res(self, filepath:Path):
@@ -122,7 +124,7 @@ class FlowSimEnv:
                 origin_node = self.dataset.node_coords[origin_node_id]
                 dest_node = self.dataset.node_coords[dest_node_id]
                 start_time = hour
-                end_time = (start_time + 8) % 24
+                end_time = (start_time + 8) % self.t
 
                 for _ in range(count):
                     person = ET.SubElement(plans, "person", id=str(person_count))
@@ -175,13 +177,14 @@ class FlowSimEnv:
         Returns:
             tuple: Next state, reward, done flags, and additional info.
         """
-        self.flow_tensor += actions
-        self.reward = self.compute_reward(actions)
+        self.cluster_flow_tensor += actions.reshape(self.cluster_flow_tensor.shape)
+        self.cluster_flow_tensor = np.clip(self.cluster_flow_tensor, a_min=0, a_max=np.inf) 
+        self.reward = self.compute_reward()
         if self.reward > self.best_reward:
             self.best_reward = self.reward
 
         return (
-            self.flow_res,
+            self.cluster_flow_tensor.reshape(self.t*self.num_clusters, self.num_clusters),
             self.reward,
             self.done,
             dict(graph_env_inst=self),

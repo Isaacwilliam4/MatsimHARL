@@ -10,7 +10,7 @@ cimport cython
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def sample_od_pairs(np.ndarray[np.float32_t, ndim=3] flows,
+def sample_od_pairs(np.ndarray[np.int32_t, ndim=3] flows,
                     dict cluster_lists,
                     int n_clusters):
     cdef:
