@@ -13,7 +13,7 @@ device:
   torch_threads: 4
 train:
   # number of parallel environments for training data collection
-  n_rollout_threads: 1
+  n_rollout_threads: 32
   # number of total training steps
   num_env_steps: 10000000
   # number of steps per environment per training data collection
@@ -34,7 +34,7 @@ eval:
   # whether to use evaluation
   use_eval: False
   # number of parallel environments for evaluation
-  n_eval_rollout_threads: 1
+  n_eval_rollout_threads: 32
   # number of episodes per evaluation
   eval_episodes: 20
 render:
@@ -65,7 +65,7 @@ model:
   data_chunk_length: 1
   # optimizer parameters
   # actor learning rate
-  lr: 1
+  lr: 0.0005
   # critic learning rate
   critic_lr: 0.0005
   # eps in Adam
@@ -73,9 +73,9 @@ model:
   # weight_decay in Adam
   weight_decay: 0
   # parameters of diagonal Gaussian distribution
-  std_x_coef: 0.000001
+  std_x_coef: 0.0001
   # parameters of diagonal Gaussian distribution
-  std_y_coef: 0.000001
+  std_y_coef: 0.0001
 algo:
   # ppo parameters
   # number of epochs for actor update

@@ -95,6 +95,7 @@ class FlowSimEnv:
     def compute_reward(self):
         flows = np.round(self.cluster_flow_tensor, 0).astype(np.int32)
         self.od_result = sample_od_pairs(flows, self.dataset.clusters, self.num_clusters)
+        self.graph_flow_tensor = np.zeros_like(self.dataset.target_graph.edge_attr)
 
         for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
