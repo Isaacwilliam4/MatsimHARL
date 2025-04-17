@@ -25,7 +25,7 @@ def sample_od_pairs(np.ndarray[np.int32_t, ndim=3] flows,
             for cluster2 in range(n_clusters):
                 if cluster1 == cluster2:
                     continue
-                count = flows[hour, cluster1, cluster2]
+                count = int(10**flows[hour, cluster1, cluster2])
                 origins = cluster_lists[cluster1]
                 dests = cluster_lists[cluster2]
 

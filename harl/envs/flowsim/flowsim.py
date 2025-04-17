@@ -50,24 +50,24 @@ class FlowSimEnv:
 
         self.action_space : Box = self.repeat(
             Box(
-                low=-.01,
-                high=.01,
+                low=-1,
+                high=1,
                 shape=(self.num_clusters,)
             )
         )
 
         self.observation_space : Box = self.repeat(
             Box(
-                low=0,
-                high=np.inf,
+                low=-1,
+                high=1,
                 shape=(self.num_clusters,)
             )
         )
 
         self.share_observation_space : Box = \
             Box(
-                low=0,
-                high=np.inf,
+                low=-1,
+                high=1,
                 shape=(self.num_clusters * self.num_clusters * t,)
             )
         
@@ -95,7 +95,7 @@ class FlowSimEnv:
     def compute_reward(self):
         flows = np.round(self.cluster_flow_tensor, 0).astype(np.int32)
         self.od_result = sample_od_pairs(flows, self.dataset.clusters, self.num_clusters)
-
+        self.graph_flow_tensor = np.zeros_like(self.dataset.target_graph.edge_attr)
         for (hour, origin_node_idx, dest_node_idx), count in self.od_result.items():
             edge_path = bfs(origin_node_idx, dest_node_idx, self.num_nodes, self.edge_index)
             self.graph_flow_tensor[edge_path, hour] += count
@@ -177,8 +177,7 @@ class FlowSimEnv:
         Returns:
             tuple: Next state, reward, done flags, and additional info.
         """
-        self.cluster_flow_tensor += actions.reshape(self.cluster_flow_tensor.shape)
-        self.cluster_flow_tensor = np.clip(self.cluster_flow_tensor, a_min=0, a_max=np.inf) 
+        self.cluster_flow_tensor = actions.reshape(self.cluster_flow_tensor.shape)
         self.reward = self.compute_reward()
         if self.reward > self.best_reward:
             self.best_reward = self.reward

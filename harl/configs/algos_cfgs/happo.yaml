@@ -65,7 +65,7 @@ model:
   data_chunk_length: 1
   # optimizer parameters
   # actor learning rate
-  lr: 1
+  lr: 0.0005
   # critic learning rate
   critic_lr: 0.0005
   # eps in Adam
@@ -73,9 +73,9 @@ model:
   # weight_decay in Adam
   weight_decay: 0
   # parameters of diagonal Gaussian distribution
-  std_x_coef: 0.000001
+  std_x_coef: 0.5
   # parameters of diagonal Gaussian distribution
-  std_y_coef: 0.000001
+  std_y_coef: 0.5
 algo:
   # ppo parameters
   # number of epochs for actor update

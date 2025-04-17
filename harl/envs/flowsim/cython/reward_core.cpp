@@ -4624,7 +4624,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
  *                     continue
- *                 count = flows[hour, cluster1, cluster2]
+ *                 count = int(10**flows[hour, cluster1, cluster2])
  */
         __pyx_t_9 = (__pyx_v_cluster1 == __pyx_v_cluster2);
         if (__pyx_t_9) {
@@ -4633,7 +4633,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:
  *                     continue             # <<<<<<<<<<<<<<
- *                 count = flows[hour, cluster1, cluster2]
+ *                 count = int(10**flows[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]
  */
           goto __pyx_L7_continue;
@@ -4643,25 +4643,25 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
  *             for cluster2 in range(n_clusters):
  *                 if cluster1 == cluster2:             # <<<<<<<<<<<<<<
  *                     continue
- *                 count = flows[hour, cluster1, cluster2]
+ *                 count = int(10**flows[hour, cluster1, cluster2])
  */
         }
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":28
  *                 if cluster1 == cluster2:
  *                     continue
- *                 count = flows[hour, cluster1, cluster2]             # <<<<<<<<<<<<<<
+ *                 count = int(10**flows[hour, cluster1, cluster2])             # <<<<<<<<<<<<<<
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]
  */
         __pyx_t_10 = __pyx_v_hour;
         __pyx_t_11 = __pyx_v_cluster1;
         __pyx_t_12 = __pyx_v_cluster2;
-        __pyx_v_count = (*__Pyx_BufPtrStrided3d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_flows.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_flows.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_flows.diminfo[1].strides, __pyx_t_12, __pyx_pybuffernd_flows.diminfo[2].strides));
+        __pyx_v_count = ((int)pow(10.0, ((double)(*__Pyx_BufPtrStrided3d(__pyx_t_5numpy_int32_t *, __pyx_pybuffernd_flows.rcbuffer->pybuffer.buf, __pyx_t_10, __pyx_pybuffernd_flows.diminfo[0].strides, __pyx_t_11, __pyx_pybuffernd_flows.diminfo[1].strides, __pyx_t_12, __pyx_pybuffernd_flows.diminfo[2].strides)))));
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":29
  *                     continue
- *                 count = flows[hour, cluster1, cluster2]
+ *                 count = int(10**flows[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]             # <<<<<<<<<<<<<<
  *                 dests = cluster_lists[cluster2]
  * 
@@ -4680,7 +4680,7 @@ static PyObject *__pyx_pf_4harl_4envs_7flowsim_6cython_11reward_core_sample_od_p
         __pyx_t_13 = 0;
 
         /* "harl/envs/flowsim/cython/reward_core.pyx":30
- *                 count = flows[hour, cluster1, cluster2]
+ *                 count = int(10**flows[hour, cluster1, cluster2])
  *                 origins = cluster_lists[cluster1]
  *                 dests = cluster_lists[cluster2]             # <<<<<<<<<<<<<<
  * 
