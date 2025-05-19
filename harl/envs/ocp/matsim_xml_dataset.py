@@ -11,6 +11,8 @@ from harl.envs.ocp.chargers import Charger, NoneCharger, StaticCharger, DynamicC
 from sklearn.cluster import KMeans
 import numpy as np
 import os
+from datetime import datetime
+from copy import deepcopy as dc
 
 
 class MatsimXMLDataset(Dataset):
@@ -22,8 +24,6 @@ class MatsimXMLDataset(Dataset):
     def __init__(
         self,
         config_path: Path,
-        results_dir: Path,
-        time_string: str,
         num_clusters: int,
     ):
         """
@@ -35,28 +35,10 @@ class MatsimXMLDataset(Dataset):
         """
         super().__init__(transform=None)
 
-        tmp_dir = Path("/tmp/" + time_string)
-        output_path = Path(tmp_dir / "output")
-
-        shutil.copytree(config_path.parent, tmp_dir)
-
-        self.config_path = Path(tmp_dir / config_path.name)
-        self.results_dir = Path(results_dir)
-
-        (
-            network_file_name,
-            plans_file_name,
-            vehicles_file_name,
-            chargers_file_name,
-            _
-        ) = self.setup_config(self.config_path, str(output_path))
-
+        time_string = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+        self.setup_dirs(config_path, time_string)
+        
         self.num_clusters = num_clusters
-        self.charger_xml_path = Path(tmp_dir / chargers_file_name)
-        self.network_xml_path = Path(tmp_dir / network_file_name)
-        self.plan_xml_path = Path(tmp_dir / plans_file_name)
-        self.vehicle_xml_path = Path(tmp_dir / vehicles_file_name)
-        self.consumption_map_path = Path(tmp_dir / "consumption_map.csv")
         self.charger_cost = 0
 
 
@@ -78,6 +60,34 @@ class MatsimXMLDataset(Dataset):
         self.create_edge_attr_mapping()
         self.parse_matsim_network()
         self.parse_charger_network_get_charger_cost()
+
+    def setup_dirs(self, config_path, time_string):
+        tmp_dir = Path("/tmp/" + time_string)
+        output_path = Path(tmp_dir / "output")
+
+        shutil.copytree(config_path.parent, tmp_dir)
+
+        self.config_path = Path(tmp_dir / config_path.name)
+
+        (
+            network_file_name,
+            plans_file_name,
+            vehicles_file_name,
+            chargers_file_name,
+            _
+        ) = self.setup_config(self.config_path, str(output_path))
+
+        self.charger_xml_path = Path(tmp_dir / chargers_file_name)
+        self.network_xml_path = Path(tmp_dir / network_file_name)
+        self.plan_xml_path = Path(tmp_dir / plans_file_name)
+        self.vehicle_xml_path = Path(tmp_dir / vehicles_file_name)
+        self.consumption_map_path = Path(tmp_dir / "consumption_map.csv")
+
+    def copy(self):
+        time_string = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+        res = dc(self)
+        res.setup_dirs(self.config_path, time_string)
+        return res
 
     def len(self):
         """

@@ -14,8 +14,7 @@ import zipfile
 import json
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
-
+from copy import deepcopy as dc
 
 class RLOCPEnv:
     """
@@ -37,8 +36,8 @@ class RLOCPEnv:
         """
 
         # each agent monitors a cluster and determines the chargers that should go there
-        self.n_agents = dataset.num_clusters
-        self.dataset = dataset
+        self.dataset = dataset.copy()
+        self.n_agents = self.dataset.num_clusters
         self.charge_model = charge_model
         self.iteration = 0
         self.charge_model_loop = charge_model_loop
