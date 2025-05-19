@@ -1,0 +1,7 @@
+config_path: "/home/isaacp/repos/RLEVMatsim/contribs/rlEvWireless/scenario_examples/tinytown_scenario_example/ev_tiny_town_config.xml"
+num_agents_per_env: 10
+results_dir: "./utah_ev_ocp_results"
+charge_model_path: "/home/isaacp/repos/RLEVMatsim/contribs/rlEvWireless/utah_ev_simlearner_results/20250516_151536_243862/model.pt"
+charge_model_loop: 100
+charge_model_pretraining_epochs: 0
+learning_rate: 1e-3

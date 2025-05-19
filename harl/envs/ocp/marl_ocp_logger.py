@@ -1,0 +1,99 @@
+from harl.common.base_logger import BaseLogger
+from torch.utils.tensorboard import SummaryWriter
+import time
+import numpy as np
+from harl.envs.ocp.rl_ocp_env import RLOCPEnv
+from pathlib import Path
+
+class FlowSimLogger(BaseLogger):
+    def __init__(self, args, algo_args, env_args, num_agents, writer : SummaryWriter, run_dir):
+        super().__init__(args, algo_args, env_args, num_agents, writer, run_dir)
+        self.run_dir = run_dir
+        self.best_reward = -np.inf
+        env_args["dataset"].save_clusters(self.run_dir)
+
+    def get_task_name(self):
+        return self.env_args["scenario"]
+    
+    def per_step(self, data):
+        (
+            obs,
+            share_obs,
+            rewards,
+            dones,
+            infos,
+            available_actions,
+            values,
+            actions,
+            action_log_probs,
+            rnn_states,
+            rnn_states_critic,
+        ) = data
+
+        best_rew_idx = np.argmax(rewards, axis=0)[0] 
+        best_rew = rewards[best_rew_idx][0]
+
+        if best_rew > self.best_reward:
+            self.best_reward = best_rew
+            best_env : RLOCPEnv = infos[best_rew_idx][0]['env']['graph_env_inst']
+            best_env.save_charger_config_to_csv(self.run_dir)
+            best_env.save_server_output(self.run_dir)
+    
+    def episode_log(
+        self, actor_train_infos, critic_train_info, actor_buffer, critic_buffer
+    ):
+
+        """Log information for each episode."""
+        self.total_num_steps = (
+            self.episode
+            * self.algo_args["train"]["episode_length"]
+            * self.algo_args["train"]["n_rollout_threads"]
+        )
+        self.end = time.time()
+        print(
+            "Env {} Task {} Algo {} Exp {} updates {}/{} episodes, total num timesteps {}/{}, FPS {}.".format(
+                self.args["env"],
+                self.task_name,
+                self.args["algo"],
+                self.args["exp_name"],
+                self.episode,
+                self.episodes,
+                self.total_num_steps,
+                self.algo_args["train"]["num_env_steps"],
+                int(self.total_num_steps / (self.end - self.start)),
+            )
+        )
+
+        avg_step_rewards = critic_buffer.rewards.mean()
+        critic_train_info["average_step_rewards"] = critic_buffer.rewards.mean()
+
+        print(
+            "Average step reward is {}.".format(
+                critic_train_info["average_step_rewards"]
+            )
+        )
+
+        if len(self.done_episodes_rewards) > 0:
+            aver_episode_rewards = np.mean(self.done_episodes_rewards)
+            print(
+                "Some episodes done, average episode reward is {}.\n".format(
+                    aver_episode_rewards
+                )
+            )
+            self.writer.add_scalars(
+                "train_episode_rewards",
+                {"aver_rewards": aver_episode_rewards},
+                self.total_num_steps,
+            )
+            self.done_episodes_rewards = []
+
+        self.writer.add_scalar("best_reward", self.best_reward, self.total_num_steps)
+
+        # only log the first agent for performance reasons
+        for k, v in actor_train_infos[0].items():
+            agent_k = "agent%i/" % 0 + k
+            self.writer.add_scalars(agent_k, {agent_k: v}, self.total_num_steps)
+
+        for k, v in critic_train_info.items():
+            critic_k = "critic/" + k
+            self.writer.add_scalars(critic_k, {critic_k: v}, self.total_num_steps)
