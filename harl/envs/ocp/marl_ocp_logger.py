@@ -13,7 +13,7 @@ class OCPLogger(BaseLogger):
         env_args["dataset"].save_clusters(self.run_dir)
 
     def get_task_name(self):
-        return self.env_args["scenario"]
+        return "ocp"
     
     def per_step(self, data):
         (

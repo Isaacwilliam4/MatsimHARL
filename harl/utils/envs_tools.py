@@ -96,8 +96,8 @@ def make_train_env(env_name, seed, n_threads, env_args):
             elif env_name == "flowsim":
                 from harl.envs.flowsim.gym_env import GYMEnv
                 env = GYMEnv(env_args)
-            elif env_name == "RLOCP":
-                from rlevmatsim.envs.rl_ocp_env import RLOCPEnv
+            elif env_name == "ocp":
+                from harl.envs.ocp.rl_ocp_env import RLOCPEnv
                 env = RLOCPEnv(**env_args)
             else:
                 print("Can not support the " + env_name + "environment.")
@@ -268,4 +268,6 @@ def get_num_agents(env, env_args, envs):
     elif env == "lag":
         return envs.n_agents
     elif env == "flowsim":
+        return envs.n_agents
+    elif env == "ocp":
         return envs.n_agents

@@ -46,11 +46,19 @@ class RLOCPEnv:
         self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
 
         self.action_space = [
-            spaces.MultiDiscrete([self.dataset.num_charger_types]) * 
-            len(cluster) for _, cluster in self.dataset.clusters.items() 
+            spaces.MultiDiscrete([self.dataset.num_charger_types]*len(cluster)) 
+            for _, cluster in self.dataset.clusters.items() 
         ]
 
         self.observation_space : Box = self.repeat(
+            Box(
+                low=0,
+                high=1,
+                shape=self.dataset.linegraph.x.shape
+            )
+        )
+
+        self.share_observation_space : Box = self.repeat(
             Box(
                 low=0,
                 high=1,
@@ -69,7 +77,7 @@ class RLOCPEnv:
             np.ndarray: Initial state of the environment.
             dict: Additional information.
         """
-        return  self.dataset.linegraph.x
+        return  self.repeat(self.dataset.linegraph.x), self.repeat(self.dataset.linegraph.x), None
 
     def save_server_output(self, dir, response, filetype):
         """
