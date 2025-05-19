@@ -96,6 +96,9 @@ def make_train_env(env_name, seed, n_threads, env_args):
             elif env_name == "flowsim":
                 from harl.envs.flowsim.gym_env import GYMEnv
                 env = GYMEnv(env_args)
+            elif env_name == "RLOCP":
+                from rlevmatsim.envs.rl_ocp_env import RLOCPEnv
+                env = RLOCPEnv(**env_args)
             else:
                 print("Can not support the " + env_name + "environment.")
                 raise NotImplementedError
