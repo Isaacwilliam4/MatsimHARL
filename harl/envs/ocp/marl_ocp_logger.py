@@ -5,7 +5,7 @@ import numpy as np
 from harl.envs.ocp.rl_ocp_env import RLOCPEnv
 from pathlib import Path
 
-class FlowSimLogger(BaseLogger):
+class OCPLogger(BaseLogger):
     def __init__(self, args, algo_args, env_args, num_agents, writer : SummaryWriter, run_dir):
         super().__init__(args, algo_args, env_args, num_agents, writer, run_dir)
         self.run_dir = run_dir

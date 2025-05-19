@@ -8,6 +8,7 @@ from harl.envs.football.football_logger import FootballLogger
 from harl.envs.dexhands.dexhands_logger import DexHandsLogger
 from harl.envs.lag.lag_logger import LAGLogger
 from harl.envs.flowsim.gym_logger import FlowSimLogger
+from harl.envs.ocp.marl_ocp_logger import OCPLogger
 
 FLAGS = flags.FLAGS
 FLAGS(["train_sc.py"])
@@ -22,4 +23,5 @@ LOGGER_REGISTRY = {
     "dexhands": DexHandsLogger,
     "smacv2": SMACv2Logger,
     "lag": LAGLogger,
+    "ocp": OCPLogger
 }
