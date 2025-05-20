@@ -4,6 +4,7 @@ import time
 import numpy as np
 from harl.envs.ocp.rl_ocp_env import RLOCPEnv
 from pathlib import Path
+import torch
 
 class OCPLogger(BaseLogger):
     def __init__(self, args, algo_args, env_args, num_agents, writer : SummaryWriter, run_dir):
@@ -11,6 +12,7 @@ class OCPLogger(BaseLogger):
         self.run_dir = run_dir
         self.best_reward = -np.inf
         env_args["dataset"].save_clusters(self.run_dir)
+        self.saved_initial_output = False
 
     def get_task_name(self):
         return "ocp"
@@ -30,14 +32,25 @@ class OCPLogger(BaseLogger):
             rnn_states_critic,
         ) = data
 
-        best_rew_idx = np.argmax(rewards, axis=0)[0] 
+
+        if not self.saved_initial_output:
+            env : RLOCPEnv = infos[0][0]['graph_env_inst']
+            env.dataset.save_output(self.run_dir, "initial_output")
+            self.saved_initial_output = True
+
+        best_rew_idx = np.argmax(rewards, axis=0)[0]
         best_rew = rewards[best_rew_idx][0]
 
         if best_rew > self.best_reward:
+            best_env : RLOCPEnv = infos[best_rew_idx][0]['graph_env_inst']
             self.best_reward = best_rew
-            best_env : RLOCPEnv = infos[best_rew_idx][0]['env']['graph_env_inst']
-            best_env.save_charger_config_to_csv(self.run_dir)
-            best_env.save_server_output(self.run_dir)
+            self.best_env = best_env
+            best_env.dataset.save_charger_config_to_csv(self.run_dir, best_rew)
+            with open(Path(self.run_dir) / "matsim_charge_model.pt", "wb") as f:
+                torch.save(best_env.dataset.charge_model, f)
+            if best_env.iteration % self.env_args["save_server_output_interval"] == 0:
+                best_env.dataset.save_output(self.run_dir, "best_output")
+
     
     def episode_log(
         self, actor_train_infos, critic_train_info, actor_buffer, critic_buffer
@@ -64,7 +77,6 @@ class OCPLogger(BaseLogger):
             )
         )
 
-        avg_step_rewards = critic_buffer.rewards.mean()
         critic_train_info["average_step_rewards"] = critic_buffer.rewards.mean()
 
         print(

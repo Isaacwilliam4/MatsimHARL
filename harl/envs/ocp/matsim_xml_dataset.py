@@ -8,6 +8,7 @@ from torch_geometric.data import Data
 from pathlib import Path
 from bidict import bidict
 from harl.envs.ocp.chargers import Charger, NoneCharger, StaticCharger, DynamicCharger
+from harl.envs.ocp.matsim_gnn import MatsimGNN
 from sklearn.cluster import KMeans
 import numpy as np
 import os
@@ -16,7 +17,10 @@ from copy import deepcopy as dc
 import zipfile
 import json
 import requests
-
+import torch.nn as nn
+import torch.optim as optim
+import pandas as pd
+from tqdm import tqdm
 
 class MatsimXMLDataset(Dataset):
     """
@@ -28,6 +32,8 @@ class MatsimXMLDataset(Dataset):
         self,
         config_path: Path,
         num_clusters: int,
+        device: str,
+
     ):
         """
         Initializes the MatsimXMLDataset.
@@ -37,6 +43,8 @@ class MatsimXMLDataset(Dataset):
             time_string (str): Unique identifier for temporary directories.
         """
         super().__init__(transform=None)
+        self.device = device
+
 
         time_string = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
         self.setup_dirs(config_path, time_string)
@@ -63,6 +71,34 @@ class MatsimXMLDataset(Dataset):
         self.create_edge_attr_mapping()
         self.parse_matsim_network()
         self.parse_charger_network_get_charger_cost()
+    
+    def init_model(self, model: MatsimGNN, charge_model_loop: int, charge_model_iters: int):
+        self.charge_model = model.to(self.device)
+        self.criterion = nn.MSELoss()
+        self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
+        self.charge_model_loop = charge_model_loop
+        self.charge_model_iters = charge_model_iters
+
+    def train_charge_model(self, iterations, debug=False):
+        print(f"\nTraining matsim predictor model, Process: {os.getpid()}\n")
+        if debug:
+            pbar = tqdm(range(iterations), desc="Training Matsim predictor model")
+        else:
+            pbar = range(iterations)
+        self.charge_model.train()
+        for _ in pbar:
+            x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
+            output = self.charge_model(x, edge_index)
+            response = self.send_reward_request()
+            target = torch.tensor(response[0]).to(self.device)
+            self.optimizer.zero_grad()
+            loss = self.criterion(output, target)
+            if debug:
+                pbar.set_postfix(loss=loss.item())
+            loss.backward()
+            self.optimizer.step()
+            self.sample_chargers()
+
 
     def setup_dirs(self, config_path, time_string):
         self.time_string = time_string
@@ -101,6 +137,34 @@ class MatsimXMLDataset(Dataset):
             int: Length of the dataset.
         """
         return len(self.graph)
+    
+    def save_charger_config_to_csv(self, dir, reward):
+        """
+        Save the current charger configuration to a CSV file.
+
+        Args:
+            csv_path (str): Path to save the CSV file.
+        """
+        static_chargers = []
+        dynamic_chargers = []
+        charger_config = self.graph.edge_attr[:, -self.num_charger_types:]
+
+        for idx, row in enumerate(charger_config):
+            if not row[0]:
+                if row[1]:
+                    dynamic_chargers.append(int(self.edge_mapping.inverse[idx]))
+                elif row[2]:
+                    static_chargers.append(int(self.edge_mapping.inverse[idx]))
+
+        df = pd.DataFrame(
+            {
+                "reward": [reward],
+                "cost": [self.charger_cost.item()],
+                "static_chargers": [static_chargers],
+                "dynamic_chargers": [dynamic_chargers],
+            }
+        )
+        df.to_csv(Path(dir) / "best_chargers.csv", index=False)
 
     def _min_max_normalize(self, tensor, reverse=False):
         """
@@ -161,16 +225,16 @@ class MatsimXMLDataset(Dataset):
 
         return network_file, plans_file, vehicles_file, chargers_file, counts_file
 
-    def save_server_output(self, dir, response, filetype):
+    def save_server_output(self, dir, response, filename):
         """
         Save server output to a zip file and extract its contents.
 
         Args:
             response (requests.Response): Server response object.
-            filetype (str): Type of file to save.
+            filename (str): name of file.
         """
-        zip_filename = Path(dir, f"{filetype}.zip")
-        extract_folder = Path(dir, filetype)
+        zip_filename = Path(dir, f"{filename}.zip")
+        extract_folder = Path(dir, filename)
 
         # Use a lock to prevent simultaneous access
         # lock = FileLock(lock_file)
@@ -184,6 +248,10 @@ class MatsimXMLDataset(Dataset):
         with zipfile.ZipFile(zip_filename, "r") as zip_ref:
             zip_ref.extractall(extract_folder)
 
+    def save_output(self, dir, filename):
+        _, response = self.send_reward_request()
+        self.save_server_output(dir, response, filename)
+
     def send_reward_request(self):
         """
         Send a reward request to the server and process the response.
@@ -191,6 +259,7 @@ class MatsimXMLDataset(Dataset):
         Returns:
             tuple: Reward value and server response.
         """
+        print(f"\nSending server request, Process: {os.getpid()}\n")
         url = "http://localhost:8000/getReward"
         files = {
             "config": open(self.config_path, "rb"),
@@ -205,10 +274,6 @@ class MatsimXMLDataset(Dataset):
         )
         json_response = json.loads(response.headers["X-response-message"])
         reward = json_response["reward"]
-        filetype = json_response["filetype"]
-
-        if filetype == "initialoutput":
-            self.save_server_output(response, filetype)
 
         return float(reward), response
     

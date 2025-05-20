@@ -24,8 +24,6 @@ class RLOCPEnv:
     def __init__(self, 
                  dataset: MatsimXMLDataset,
                  device: str,
-                 charge_model: MatsimGNN,
-                 charge_model_loop: int = 100,
                  **kwargs):
         """
         Initialize the environment.
@@ -40,12 +38,7 @@ class RLOCPEnv:
         self.device = device
         self.dataset = dataset.copy()
         self.n_agents = self.dataset.num_clusters
-        self.charge_model = charge_model
         self.iteration = 0
-        self.charge_model_loop = charge_model_loop
-
-        self.criterion = nn.MSELoss()
-        self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
 
         self.action_space = self.repeat(
             spaces.MultiDiscrete([self.dataset.num_charger_types]*dataset.max_cluster_len)
@@ -80,36 +73,6 @@ class RLOCPEnv:
         """
         return  self.repeat(self.dataset.linegraph.x.flatten()), self.repeat(self.dataset.linegraph.x.flatten()), None
 
-
-
-    def save_charger_config_to_csv(self, dir):
-        """
-        Save the current charger configuration to a CSV file.
-
-        Args:
-            csv_path (str): Path to save the CSV file.
-        """
-        static_chargers = []
-        dynamic_chargers = []
-        charger_config = self.dataset.graph.edge_attr[:, -self.dataset.num_charger_types:]
-
-        for idx, row in enumerate(charger_config):
-            if not row[0]:
-                if row[1]:
-                    dynamic_chargers.append(int(self.dataset.edge_mapping.inverse[idx]))
-                elif row[2]:
-                    static_chargers.append(int(self.dataset.edge_mapping.inverse[idx]))
-
-        df = pd.DataFrame(
-            {
-                "reward": [self.reward],
-                "cost": [self.dataset.charger_cost.item()],
-                "static_chargers": [static_chargers],
-                "dynamic_chargers": [dynamic_chargers],
-            }
-        )
-        df.to_csv(Path(dir / "best_chargers.csv"), index=False)
-
     def step(self, actions):
         """
         Take an action and return the next state, reward, done, and info.
@@ -128,34 +91,28 @@ class RLOCPEnv:
 
         self.iteration += 1
         loss = None
-        if self.iteration % self.charge_model_loop == 0:
-            avg_charge_reward, _ = self.send_reward_request() 
-            self.charge_model.train()
-            x, edge_index = self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device) 
-            output = self.charge_model(x, edge_index)
-            target = torch.tensor(avg_charge_reward).to(self.device)
-            self.optimizer.zero_grad()
-            loss = self.criterion(output, target)
-            self.optimizer.step()
-            self.charge_model.eval()
-        else:
-            avg_charge_reward = self.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
+        if self.iteration % self.dataset.charge_model_loop == 0:
+            self.dataset.train_charge_model(self.dataset.charge_model_iters)
+            
+        avg_charge_reward = self.dataset.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
         
-        _reward = avg_charge_reward - charger_cost_reward
+        _reward = (avg_charge_reward - charger_cost_reward).detach().item()
 
         self.reward = _reward
         if _reward > self.best_reward:
             self.best_reward = _reward
 
         return (
-            self.dataset.linegraph.x.flatten(),
-            _reward,
-            self.done,
-            self.done,
-            dict(graph_env_inst=self, 
-                 avg_charge_reward=avg_charge_reward, 
+            self.repeat(self.dataset.linegraph.x.flatten()),
+            self.repeat(self.dataset.linegraph.x.flatten()),
+            self.repeat(_reward),
+            self.repeat(False),
+            self.repeat(dict(graph_env_inst=self, 
+                 avg_charge_reward=avg_charge_reward.detach().item(), 
                  charger_cost_reward=charger_cost_reward,
-                 charge_model_loss = None if loss is None else loss.item()),
+                 charge_model_loss = None if loss is None else loss.item()))
+            ,
+            None
         )
 
     def seed(self, seed: int):
