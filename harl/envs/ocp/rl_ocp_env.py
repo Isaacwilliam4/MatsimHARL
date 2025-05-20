@@ -23,6 +23,7 @@ class RLOCPEnv:
 
     def __init__(self, 
                  dataset: MatsimXMLDataset,
+                 device: str,
                  charge_model: MatsimGNN,
                  charge_model_loop: int = 100,
                  **kwargs):
@@ -36,6 +37,7 @@ class RLOCPEnv:
         """
 
         # each agent monitors a cluster and determines the chargers that should go there
+        self.device = device
         self.dataset = dataset.copy()
         self.n_agents = self.dataset.num_clusters
         self.charge_model = charge_model
@@ -45,16 +47,15 @@ class RLOCPEnv:
         self.criterion = nn.MSELoss()
         self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
 
-        self.action_space = [
-            spaces.MultiDiscrete([self.dataset.num_charger_types]*len(cluster)) 
-            for _, cluster in self.dataset.clusters.items() 
-        ]
+        self.action_space = self.repeat(
+            spaces.MultiDiscrete([self.dataset.num_charger_types]*dataset.max_cluster_len)
+        )
 
         self.observation_space : Box = self.repeat(
             Box(
                 low=0,
                 high=1,
-                shape=self.dataset.linegraph.x.shape
+                shape=(self.dataset.linegraph.x.numel(),)
             )
         )
 
@@ -62,7 +63,7 @@ class RLOCPEnv:
             Box(
                 low=0,
                 high=1,
-                shape=self.dataset.linegraph.x.shape
+                shape=(self.dataset.linegraph.x.numel(),)
             )
         )
 
@@ -77,7 +78,7 @@ class RLOCPEnv:
             np.ndarray: Initial state of the environment.
             dict: Additional information.
         """
-        return  self.repeat(self.dataset.linegraph.x), self.repeat(self.dataset.linegraph.x), None
+        return  self.repeat(self.dataset.linegraph.x.flatten()), self.repeat(self.dataset.linegraph.x.flatten()), None
 
     def save_server_output(self, dir, response, filetype):
         """
@@ -187,7 +188,7 @@ class RLOCPEnv:
             self.optimizer.step()
             self.charge_model.eval()
         else:
-            avg_charge_reward = self.charge_model(self.dataset.linegraph.x, self.dataset.linegraph.edge_index)
+            avg_charge_reward = self.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
         
         _reward = avg_charge_reward - charger_cost_reward
 
@@ -196,7 +197,7 @@ class RLOCPEnv:
             self.best_reward = _reward
 
         return (
-            self.dataset.linegraph.x,
+            self.dataset.linegraph.x.flatten(),
             _reward,
             self.done,
             self.done,

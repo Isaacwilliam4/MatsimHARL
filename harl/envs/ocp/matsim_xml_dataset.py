@@ -233,13 +233,13 @@ class MatsimXMLDataset(Dataset):
         self.linegraph = self.linegraph_transform(self.graph)
         self.max_mins = torch.stack(
             [
-                torch.min(self.graph.edge_attr[:, :3], dim=0).values,
-                torch.max(self.graph.edge_attr[:, :3], dim=0).values,
+                torch.min(self.graph.edge_attr[:, :4], dim=0).values,
+                torch.max(self.graph.edge_attr[:, :4], dim=0).values,
             ]
         )
 
-        self.graph.edge_attr[:, :3] = self._min_max_normalize(
-            self.graph.edge_attr[:, :3]
+        self.graph.edge_attr[:, :4] = self._min_max_normalize(
+            self.graph.edge_attr[:, :4]
         )
         self.state = self.graph.edge_attr
 
@@ -255,6 +255,14 @@ class MatsimXMLDataset(Dataset):
                 self.clusters[cluster_id].append(edge_idx)
 
         self.clusters = {k: v for k,v in sorted(self.clusters.items(), key=lambda x: x[0])}
+        self.available_actions = []
+        self.max_cluster_len = 0
+        
+        for cluster in self.clusters.values():
+            n = len(cluster)
+            self.available_actions.append(np.arange(n))
+            if n > self.max_cluster_len:
+                self.max_cluster_len = n
 
     def save_clusters(self, dir):
         filepath = Path(Path(dir) / "clusters.txt")
@@ -379,20 +387,22 @@ class MatsimXMLDataset(Dataset):
         """
         chargers = ET.Element("chargers")
 
-        for idx, action in enumerate(actions):
-            if action == 0:
-                continue
-            charger = self.charger_list[action]
-            link_id = self.edge_mapping.inv[idx]
-            ET.SubElement(
-                chargers,
-                "charger",
-                id=str(idx),
-                link=str(link_id),
-                plug_power=str(charger.plug_power),
-                plug_count=str(charger.plug_count),
-                type=charger.type,
-            )
+        for cluster_idx, cluster_action in enumerate(actions):
+            for action_idx, action in enumerate(cluster_action[self.available_actions[cluster_idx]]):
+                if action == 0:
+                    continue
+                charger = self.charger_list[action]
+                link_idx = self.clusters[cluster_idx][action_idx]
+                link_id = self.edge_mapping.inv[link_idx]
+                ET.SubElement(
+                    chargers,
+                    "charger",
+                    id=str(link_idx),
+                    link=str(link_id),
+                    plug_power=str(charger.plug_power),
+                    plug_count=str(charger.plug_count),
+                    type=charger.type,
+                )
 
         tree = ET.ElementTree(chargers)
         with open(self.charger_xml_path, "wb") as f:
