@@ -80,56 +80,7 @@ class RLOCPEnv:
         """
         return  self.repeat(self.dataset.linegraph.x.flatten()), self.repeat(self.dataset.linegraph.x.flatten()), None
 
-    def save_server_output(self, dir, response, filetype):
-        """
-        Save server output to a zip file and extract its contents.
 
-        Args:
-            response (requests.Response): Server response object.
-            filetype (str): Type of file to save.
-        """
-        zip_filename = Path(dir, f"{filetype}.zip")
-        extract_folder = Path(dir, filetype)
-
-        # Use a lock to prevent simultaneous access
-        # lock = FileLock(lock_file)
-
-        # with lock:
-        # Save the zip file
-        with open(zip_filename, "wb") as f:
-            f.write(response.content)
-
-        # Extract the zip file
-        with zipfile.ZipFile(zip_filename, "r") as zip_ref:
-            zip_ref.extractall(extract_folder)
-
-    def send_reward_request(self, dataset, time_string):
-        """
-        Send a reward request to the server and process the response.
-
-        Returns:
-            tuple: Reward value and server response.
-        """
-        url = "http://localhost:8000/getReward"
-        files = {
-            "config": open(dataset.config_path, "rb"),
-            "network": open(dataset.network_xml_path, "rb"),
-            "plans": open(dataset.plan_xml_path, "rb"),
-            "vehicles": open(dataset.vehicle_xml_path, "rb"),
-            "chargers": open(dataset.charger_xml_path, "rb"),
-            "consumption_map": open(dataset.consumption_map_path, "rb"),
-        }
-        response = requests.post(
-            url, params={"folder_name": time_string}, files=files
-        )
-        json_response = json.loads(response.headers["X-response-message"])
-        reward = json_response["reward"]
-        filetype = json_response["filetype"]
-
-        if filetype == "initialoutput":
-            self.save_server_output(response, filetype)
-
-        return float(reward), response
 
     def save_charger_config_to_csv(self, dir):
         """

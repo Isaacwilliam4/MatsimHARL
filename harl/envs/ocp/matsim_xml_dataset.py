@@ -13,6 +13,9 @@ import numpy as np
 import os
 from datetime import datetime
 from copy import deepcopy as dc
+import zipfile
+import json
+import requests
 
 
 class MatsimXMLDataset(Dataset):
@@ -62,6 +65,7 @@ class MatsimXMLDataset(Dataset):
         self.parse_charger_network_get_charger_cost()
 
     def setup_dirs(self, config_path, time_string):
+        self.time_string = time_string
         tmp_dir = Path("/tmp/" + time_string)
         output_path = Path(tmp_dir / "output")
 
@@ -157,6 +161,57 @@ class MatsimXMLDataset(Dataset):
 
         return network_file, plans_file, vehicles_file, chargers_file, counts_file
 
+    def save_server_output(self, dir, response, filetype):
+        """
+        Save server output to a zip file and extract its contents.
+
+        Args:
+            response (requests.Response): Server response object.
+            filetype (str): Type of file to save.
+        """
+        zip_filename = Path(dir, f"{filetype}.zip")
+        extract_folder = Path(dir, filetype)
+
+        # Use a lock to prevent simultaneous access
+        # lock = FileLock(lock_file)
+
+        # with lock:
+        # Save the zip file
+        with open(zip_filename, "wb") as f:
+            f.write(response.content)
+
+        # Extract the zip file
+        with zipfile.ZipFile(zip_filename, "r") as zip_ref:
+            zip_ref.extractall(extract_folder)
+
+    def send_reward_request(self):
+        """
+        Send a reward request to the server and process the response.
+
+        Returns:
+            tuple: Reward value and server response.
+        """
+        url = "http://localhost:8000/getReward"
+        files = {
+            "config": open(self.config_path, "rb"),
+            "network": open(self.network_xml_path, "rb"),
+            "plans": open(self.plan_xml_path, "rb"),
+            "vehicles": open(self.vehicle_xml_path, "rb"),
+            "chargers": open(self.charger_xml_path, "rb"),
+            "consumption_map": open(self.consumption_map_path, "rb"),
+        }
+        response = requests.post(
+            url, params={"folder_name": self.time_string}, files=files
+        )
+        json_response = json.loads(response.headers["X-response-message"])
+        reward = json_response["reward"]
+        filetype = json_response["filetype"]
+
+        if filetype == "initialoutput":
+            self.save_server_output(response, filetype)
+
+        return float(reward), response
+    
     def create_edge_attr_mapping(self):
         """
         Creates a mapping of edge attributes to their indices.
