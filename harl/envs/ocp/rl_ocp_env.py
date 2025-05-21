@@ -93,7 +93,7 @@ class RLOCPEnv:
         self.iteration += 1
 
         if self.iteration % self.dataset.charge_model_loop == 0:
-            self.dataset.curr_charge_model_iters = self.dataset.charger_model_iters
+            self.dataset.curr_charge_model_iters = self.dataset.charge_model_iters
 
         if self.dataset.curr_charge_model_iters > 0:
             self.dataset.curr_charge_model_iters -= 1

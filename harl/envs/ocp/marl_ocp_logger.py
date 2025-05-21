@@ -49,15 +49,16 @@ class OCPLogger(BaseLogger):
         self.charge_efficiency = best_env.charge_reward
 
         if best_env.iteration % self.env_args["save_server_output_interval"] == 0:
-            best_env.dataset.save_output(self.run_dir, "best_output")
+            self.best_env.dataset.save_output(self.run_dir, "best_output")
+            with open(Path(self.run_dir) / "matsim_charge_model.pt", "wb") as f:
+                torch.save(self.best_env.dataset.charge_model, f)
 
         if best_rew > self.best_reward:
             self.best_reward = best_rew
             self.best_env = best_env
             best_env.dataset.save_charger_config_to_csv(self.run_dir, best_rew)
 
-            with open(Path(self.run_dir) / "matsim_charge_model.pt", "wb") as f:
-                torch.save(best_env.dataset.charge_model, f)
+
 
 
     
