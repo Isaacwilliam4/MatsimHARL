@@ -71,23 +71,25 @@ class MatsimXMLDataset(Dataset):
         self.max_charger_cost = 0
         self.create_edge_attr_mapping()
         self.parse_matsim_network()
-        self.parse_charger_network_get_charger_cost()
+        self.get_charger_cost_reward()
     
-    def init_model(self, model: MatsimGNN, charge_model_loop: int, charge_model_iters: int):
+    def init_model(self, model: MatsimGNN, charge_model_loop: int, charge_model_iters: int, lr: float):
         self.charge_model = model.to(self.device)
         self.criterion = nn.MSELoss()
-        self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
+        self.optimizer = optim.Adam(self.charge_model.parameters(), lr=lr)
         self.charge_model_loop = charge_model_loop
         self.charge_model_iters = charge_model_iters
         self.train_charge_model(1)
 
-    def train_charge_model(self, iterations, debug=False):
+    def train_charge_model(self, iterations, debug=True):
+        self.charge_model.train()
         if debug:
             pbar = tqdm(range(iterations), desc="Training Matsim predictor model")
         else:
             pbar = range(iterations)
         self.charge_model.train()
         for _ in pbar:
+            self.sample_chargers()
             x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
             output = self.charge_model(x, edge_index)
             response = self.send_reward_request()
@@ -99,7 +101,7 @@ class MatsimXMLDataset(Dataset):
                 pbar.set_postfix(loss=loss.item())
             loss.backward()
             self.optimizer.step()
-            self.sample_chargers()
+        self.charge_model.eval()
 
 
     def setup_dirs(self, config_path, time_string):
@@ -164,7 +166,7 @@ class MatsimXMLDataset(Dataset):
         df = pd.DataFrame(
             {
                 "reward": [reward],
-                "cost": [self.charger_cost.item()],
+                "cost": [self.charger_cost],
                 "static_chargers": [static_chargers],
                 "dynamic_chargers": [dynamic_chargers],
             }
@@ -285,7 +287,7 @@ class MatsimXMLDataset(Dataset):
         """
         Creates a mapping of edge attributes to their indices.
         """
-        self.edge_attr_mapping = {"length": 0, "freespeed": 1, "capacity": 2, "slopes":3}
+        self.edge_attr_mapping = bidict({"length": 0, "freespeed": 1, "capacity": 2, "slopes":3})
         edge_attr_idx = len(self.edge_attr_mapping)
         for charger in self.charger_list:
             self.edge_attr_mapping[charger.type] = edge_attr_idx
@@ -357,13 +359,13 @@ class MatsimXMLDataset(Dataset):
         self.linegraph = self.linegraph_transform(self.graph)
         self.max_mins = torch.stack(
             [
-                torch.min(self.graph.edge_attr[:, :4], dim=0).values,
-                torch.max(self.graph.edge_attr[:, :4], dim=0).values,
+                torch.min(self.graph.edge_attr[:, :-self.num_charger_types], dim=0).values,
+                torch.max(self.graph.edge_attr[:, :-self.num_charger_types], dim=0).values,
             ]
         )
 
-        self.graph.edge_attr[:, :4] = self._min_max_normalize(
-            self.graph.edge_attr[:, :4]
+        self.graph.edge_attr[:, :-self.num_charger_types] = self._min_max_normalize(
+            self.graph.edge_attr[:, :-self.num_charger_types]
         )
         self.state = self.graph.edge_attr
 
@@ -439,6 +441,35 @@ class MatsimXMLDataset(Dataset):
             )
             tree.write(f)
 
+        curr_charger_config = self.linegraph.x[:, -self.num_charger_types:]
+        new_charger_config = torch.zeros_like(curr_charger_config)
+        new_charger_config[torch.arange(new_charger_config.shape[0]), actions] = 1
+        self.linegraph.x[:, -self.num_charger_types:] = new_charger_config
+
+
+
+        
+
+    def get_charger_cost_reward(self):
+        freeway_length_idx = self.edge_attr_mapping['length']
+        static_charger_idx = self.edge_attr_mapping['default']
+        dynamic_charger_idx = self.edge_attr_mapping['dynamic']
+        num_static_chargers = torch.sum(self.linegraph.x[:,static_charger_idx])
+        mask = self.linegraph.x[:, dynamic_charger_idx] == 1
+        dynamic_charger_idxs = mask.nonzero(as_tuple=False).squeeze(1)
+        vals_denormalized = self._min_max_normalize(self.linegraph.x[:, :-self.num_charger_types], reverse=True)
+
+        length_m = vals_denormalized[dynamic_charger_idxs, freeway_length_idx]
+        length_km = length_m * 0.001
+        total_length_km = torch.sum(length_km)
+
+        static_cost = StaticCharger.price * num_static_chargers
+        dynamic_cost = DynamicCharger.price * total_length_km
+        total_cost = static_cost + dynamic_cost
+        self.charger_cost = total_cost.item()
+
+        return (total_cost / self.max_charger_cost).item()
+
     def parse_charger_network_get_charger_cost(self):
         """
         Parses the charger network XML file and calculates the total charger
@@ -452,8 +483,8 @@ class MatsimXMLDataset(Dataset):
         root = tree.getroot()
 
         # Reset the values of the charger placements
-        self.graph.edge_attr[:, 3:] = torch.zeros(
-            self.graph.edge_attr.shape[0], self.graph.edge_attr[:, 3:].shape[1]
+        self.graph.edge_attr[:, -self.num_charger_types:] = torch.zeros(
+            self.graph.edge_attr.shape[0], self.graph.edge_attr[:, -self.num_charger_types:].shape[1]
         )
 
         for charger in root.findall(".//charger"):
@@ -535,6 +566,9 @@ class MatsimXMLDataset(Dataset):
                 b'<!DOCTYPE chargers SYSTEM "http://matsim.org/files/dtd/chargers_v1.dtd">\n'
             )
             tree.write(f)
+
+    def update_graph_attr(self, actions):
+        pass
 
     def get_graph(self):
         """

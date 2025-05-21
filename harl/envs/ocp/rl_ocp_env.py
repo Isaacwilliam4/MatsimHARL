@@ -83,14 +83,15 @@ class RLOCPEnv:
         Returns:
             tuple: Next state, reward, done flags, and additional info.
         """
-        self.dataset.create_chargers_xml_gymnasium(
-            actions
-        )
-        charger_cost = self.dataset.parse_charger_network_get_charger_cost()
-        charger_cost_reward = (charger_cost / self.dataset.max_charger_cost).item()
 
+        curr_charger_config = self.dataset.linegraph.x[:, -self.dataset.num_charger_types:]
+        new_charger_config = torch.zeros_like(curr_charger_config)
+        new_charger_config[torch.arange(new_charger_config.shape[0]), actions] = 1
+        self.dataset.linegraph.x[:, -self.dataset.num_charger_types:] = new_charger_config
+        
+        charger_cost_reward = self.dataset.get_charger_cost_reward()
         self.iteration += 1
-        loss = None
+
         if self.iteration % self.dataset.charge_model_loop == 0:
             self.dataset.train_charge_model(self.dataset.charge_model_iters)
             
@@ -109,8 +110,7 @@ class RLOCPEnv:
             self.repeat(False),
             self.repeat(dict(graph_env_inst=self, 
                  avg_charge_reward=avg_charge_reward.detach().item(), 
-                 charger_cost_reward=charger_cost_reward,
-                 charge_model_loss = None if loss is None else loss.item()))
+                 charger_cost_reward=charger_cost_reward))
             ,
             None
         )
