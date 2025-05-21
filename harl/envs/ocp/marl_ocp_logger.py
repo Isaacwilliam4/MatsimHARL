@@ -40,16 +40,24 @@ class OCPLogger(BaseLogger):
 
         best_rew_idx = np.argmax(rewards, axis=0)[0]
         best_rew = rewards[best_rew_idx][0]
+        self.avg_reward = np.mean(rewards[:,0])
+        best_env : RLOCPEnv = infos[best_rew_idx][0]['graph_env_inst']
+        self.charger_cost = best_env.dataset.charger_cost
+        self.num_dynamic_chargers = best_env.dataset.linegraph.x[:,-1].sum()
+        self.num_static_chargers = best_env.dataset.linegraph.x[:,-2].sum()
+        self.charger_model_loss = best_env.dataset.charger_model_loss
+
+        if best_env.iteration % self.env_args["save_server_output_interval"] == 0:
+            best_env.dataset.save_output(self.run_dir, "best_output")
 
         if best_rew > self.best_reward:
-            best_env : RLOCPEnv = infos[best_rew_idx][0]['graph_env_inst']
             self.best_reward = best_rew
             self.best_env = best_env
             best_env.dataset.save_charger_config_to_csv(self.run_dir, best_rew)
+
             with open(Path(self.run_dir) / "matsim_charge_model.pt", "wb") as f:
                 torch.save(best_env.dataset.charge_model, f)
-            if best_env.iteration % self.env_args["save_server_output_interval"] == 0:
-                best_env.dataset.save_output(self.run_dir, "best_output")
+
 
     
     def episode_log(
@@ -85,21 +93,12 @@ class OCPLogger(BaseLogger):
             )
         )
 
-        if len(self.done_episodes_rewards) > 0:
-            aver_episode_rewards = np.mean(self.done_episodes_rewards)
-            print(
-                "Some episodes done, average episode reward is {}.\n".format(
-                    aver_episode_rewards
-                )
-            )
-            self.writer.add_scalars(
-                "train_episode_rewards",
-                {"aver_rewards": aver_episode_rewards},
-                self.total_num_steps,
-            )
-            self.done_episodes_rewards = []
-
         self.writer.add_scalar("best_reward", self.best_reward, self.total_num_steps)
+        self.writer.add_scalar("avg_reward", self.avg_reward, self.total_num_steps)
+        self.writer.add_scalar("charger_cost", self.charger_cost, self.total_num_steps)
+        self.writer.add_scalar("num_static_chargers", self.num_static_chargers, self.total_num_steps)
+        self.writer.add_scalar("num_dynamic_chargers", self.num_dynamic_chargers, self.total_num_steps)
+        self.writer.add_scalar("charger_model_loss", self.charger_model_loss, self.total_num_steps)
 
         # only log the first agent for performance reasons
         for k, v in actor_train_infos[0].items():

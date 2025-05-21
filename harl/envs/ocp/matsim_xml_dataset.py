@@ -51,6 +51,7 @@ class MatsimXMLDataset(Dataset):
         
         self.num_clusters = num_clusters
         self.charger_cost = 0
+        self.charger_model_loss = None
 
 
         self.node_mapping: bidict[str, int] = (
@@ -78,9 +79,9 @@ class MatsimXMLDataset(Dataset):
         self.optimizer = optim.Adam(self.charge_model.parameters(), lr=1e-3)
         self.charge_model_loop = charge_model_loop
         self.charge_model_iters = charge_model_iters
+        self.train_charge_model(1)
 
     def train_charge_model(self, iterations, debug=False):
-        print(f"\nTraining matsim predictor model, Process: {os.getpid()}\n")
         if debug:
             pbar = tqdm(range(iterations), desc="Training Matsim predictor model")
         else:
@@ -93,6 +94,7 @@ class MatsimXMLDataset(Dataset):
             target = torch.tensor(response[0]).to(self.device)
             self.optimizer.zero_grad()
             loss = self.criterion(output, target)
+            self.charger_model_loss = loss.item()
             if debug:
                 pbar.set_postfix(loss=loss.item())
             loss.backward()
@@ -150,11 +152,14 @@ class MatsimXMLDataset(Dataset):
         charger_config = self.graph.edge_attr[:, -self.num_charger_types:]
 
         for idx, row in enumerate(charger_config):
-            if not row[0]:
-                if row[1]:
-                    dynamic_chargers.append(int(self.edge_mapping.inverse[idx]))
-                elif row[2]:
-                    static_chargers.append(int(self.edge_mapping.inverse[idx]))
+            charger_idx = torch.nonzero(row)[0]
+            charger_type = self.charger_list[charger_idx]
+            if charger_type.type == "none":
+                continue
+            elif charger_type.type == "default":
+                static_chargers.append(int(self.edge_mapping.inverse[idx]))
+            elif charger_type.type == "dynamic":
+                dynamic_chargers.append(int(self.edge_mapping.inverse[idx]))
 
         df = pd.DataFrame(
             {
@@ -259,7 +264,6 @@ class MatsimXMLDataset(Dataset):
         Returns:
             tuple: Reward value and server response.
         """
-        print(f"\nSending server request, Process: {os.getpid()}\n")
         url = "http://localhost:8000/getReward"
         files = {
             "config": open(self.config_path, "rb"),
@@ -464,7 +468,7 @@ class MatsimXMLDataset(Dataset):
                 link_idx = self.edge_mapping[link_id]
                 link_attr = self.graph.edge_attr[link_idx]
                 link_attr_denormalized = self._min_max_normalize(
-                    link_attr[:4], reverse=True
+                    link_attr[:-self.num_charger_types], reverse=True
                 )
                 link_len_km = (
                     link_attr_denormalized[self.edge_attr_mapping["length"]] * 0.001
