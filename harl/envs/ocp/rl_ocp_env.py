@@ -93,11 +93,15 @@ class RLOCPEnv:
         self.iteration += 1
 
         if self.iteration % self.dataset.charge_model_loop == 0:
-            self.dataset.train_charge_model(self.dataset.charge_model_iters)
+            self.dataset.curr_charge_model_iters = self.dataset.charger_model_iters
+
+        if self.dataset.curr_charge_model_iters > 0:
+            self.dataset.curr_charge_model_iters -= 1
+            self.dataset.train_charge_model()
             
-        avg_charge_reward = self.dataset.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
-        
-        _reward = (avg_charge_reward - charger_cost_reward).detach().item()
+        charge_reward = self.dataset.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
+        self.charge_reward = charge_reward.detach().item()
+        _reward = (charge_reward - charger_cost_reward).detach().item()
 
         self.reward = _reward
         if _reward > self.best_reward:
@@ -109,7 +113,7 @@ class RLOCPEnv:
             self.repeat(_reward),
             self.repeat(False),
             self.repeat(dict(graph_env_inst=self, 
-                 avg_charge_reward=avg_charge_reward.detach().item(), 
+                 charge_reward=charge_reward.detach().item(), 
                  charger_cost_reward=charger_cost_reward))
             ,
             None

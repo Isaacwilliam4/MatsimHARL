@@ -46,6 +46,7 @@ class OCPLogger(BaseLogger):
         self.num_dynamic_chargers = best_env.dataset.linegraph.x[:,-1].sum()
         self.num_static_chargers = best_env.dataset.linegraph.x[:,-2].sum()
         self.charger_model_loss = best_env.dataset.charger_model_loss
+        self.charge_efficiency = best_env.charge_reward
 
         if best_env.iteration % self.env_args["save_server_output_interval"] == 0:
             best_env.dataset.save_output(self.run_dir, "best_output")
@@ -99,6 +100,7 @@ class OCPLogger(BaseLogger):
         self.writer.add_scalar("num_static_chargers", self.num_static_chargers, self.total_num_steps)
         self.writer.add_scalar("num_dynamic_chargers", self.num_dynamic_chargers, self.total_num_steps)
         self.writer.add_scalar("charger_model_loss", self.charger_model_loss, self.total_num_steps)
+        self.writer.add_scalar("charge_efficiency", self.charge_efficiency, self.total_num_steps)
 
         # only log the first agent for performance reasons
         for k, v in actor_train_infos[0].items():
