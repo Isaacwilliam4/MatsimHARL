@@ -249,6 +249,7 @@ class MatsimXMLDataset(Dataset):
             zip_ref.extractall(extract_folder)
 
     def save_output(self, dir, filename):
+        self.create_chargers_from_graph()
         _, response = self.send_reward_request()
         self.save_server_output(dir, response, filename)
 
@@ -458,69 +459,39 @@ class MatsimXMLDataset(Dataset):
         self.charger_cost = total_cost.item()
 
         return (total_cost / self.max_charger_cost).item()
-
-    def parse_charger_network_get_charger_cost(self):
+    
+    def create_chargers_from_graph(self):
         """
-        Parses the charger network XML file and calculates the total charger
-        cost.
-
-        Returns:
-            float: Total cost of chargers in the network.
+        Create a chargers XML file for MATSim using a multi-discrete action space.
         """
-        cost = 0
-        tree = ET.parse(self.charger_xml_path)
-        root = tree.getroot()
+        chargers = ET.Element("chargers")
+    
+        charger_config = self.linegraph.x[:,-self.num_charger_types:]
 
-        # Reset the values of the charger placements
-        self.graph.edge_attr[:, -self.num_charger_types:] = torch.zeros(
-            self.graph.edge_attr.shape[0], self.graph.edge_attr[:, -self.num_charger_types:].shape[1]
-        )
+        for link_idx, config in enumerate(charger_config):
+            charger = self.charger_list[torch.nonzero(config, as_tuple=False)[0]]
+            if charger.type == "none":
+                continue
+            
+            link_id = self.edge_mapping.inv[link_idx]
+            ET.SubElement(
+                chargers,
+                "charger",
+                id=str(link_idx),
+                link=str(link_id),
+                plug_power=str(charger.plug_power),
+                plug_count=str(charger.plug_count),
+                type=charger.type,
+            )
 
-        for charger in root.findall(".//charger"):
-            link_id = charger.get("link")
-            charger_type = charger.get("type")
-            if charger_type is None:
-                charger_type = StaticCharger.type
+        tree = ET.ElementTree(chargers)
+        with open(self.charger_xml_path, "wb") as f:
+            f.write(b'<?xml version="1.0" ?>\n')
+            f.write(
+                b'<!DOCTYPE chargers SYSTEM "http://matsim.org/files/dtd/chargers_v1.dtd">\n'
+            )
+            tree.write(f)
 
-            if charger_type == StaticCharger.type:
-                cost += StaticCharger.price
-            elif charger_type == DynamicCharger.type:
-                link_idx = self.edge_mapping[link_id]
-                link_attr = self.graph.edge_attr[link_idx]
-                link_attr_denormalized = self._min_max_normalize(
-                    link_attr[:-self.num_charger_types], reverse=True
-                )
-                link_len_km = (
-                    link_attr_denormalized[self.edge_attr_mapping["length"]] * 0.001
-                )
-                cost += DynamicCharger.price * link_len_km
-
-            self.graph.edge_attr[self.edge_mapping[link_id]][
-                self.edge_attr_mapping[charger_type]
-            ] = 1
-
-        # Update the rest of the links to have no charger
-        tree = ET.parse(self.network_xml_path)
-        root = tree.getroot()
-        for link in root.findall(".//link"):
-            link_id = link.get("id")
-
-            if not (
-                self.graph.edge_attr[self.edge_mapping[link_id]][
-                    self.edge_attr_mapping["default"]
-                ]
-                == 1
-                or self.graph.edge_attr[self.edge_mapping[link_id]][
-                    self.edge_attr_mapping["dynamic"]
-                ]
-                == 1
-            ):
-                self.graph.edge_attr[self.edge_mapping[link_id]][
-                    self.edge_attr_mapping["none"]
-                ] = 1
-
-        self.charger_cost = cost
-        return cost
     
     def create_chargers_xml_gymnasium(
         self, 
