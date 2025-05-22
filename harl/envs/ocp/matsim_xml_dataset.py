@@ -79,23 +79,23 @@ class MatsimXMLDataset(Dataset):
         self.optimizer = optim.Adam(self.charge_model.parameters(), lr=lr)
         self.charge_model_loop = charge_model_loop
         self.charge_model_iters = charge_model_iters
-        self.curr_charge_model_iters = 0
-        self.train_charge_model()
 
-    def train_charge_model(self):
+    def train_charge_model(self, iterations):
         self.charge_model.train()
-        x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
-        output = self.charge_model(x, edge_index)
-        response = self.send_reward_request()
-        target = torch.tensor(response[0]).to(self.device)
-        self.optimizer.zero_grad()
-        loss = self.criterion(output, target)
-        self.charger_model_loss = loss.item()
-        loss.backward()
-        self.optimizer.step()
+        pbar = tqdm(range(iterations), desc="Training Sim Learner")
+        for _ in pbar:
+            self.sample_chargers()
+            x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
+            output = self.charge_model(x, edge_index)
+            response = self.send_reward_request()
+            target = torch.tensor(response[0]).to(self.device)
+            self.optimizer.zero_grad()
+            loss = self.criterion(output, target)
+            self.charger_model_loss = loss.item()
+            loss.backward()
+            self.optimizer.step()
+            pbar.set_postfix(loss=loss.item())
         self.charge_model.eval()
-        return loss.item()
-
 
     def setup_dirs(self, config_path, time_string):
         self.time_string = time_string
@@ -411,6 +411,9 @@ class MatsimXMLDataset(Dataset):
         """
         chargers = ET.Element("chargers")
         actions = torch.randint(0, 3, size=(self.linegraph.num_nodes,))
+        new_charger_config = torch.zeros_like(self.linegraph.x[:,-self.num_charger_types:])
+        new_charger_config[torch.arange(new_charger_config.shape[0]), actions] = 1
+        self.linegraph.x[:, -self.num_charger_types:] = new_charger_config
 
         for idx, action in enumerate(actions):
             if action == 0:

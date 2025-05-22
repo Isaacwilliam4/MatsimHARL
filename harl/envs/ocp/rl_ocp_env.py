@@ -93,12 +93,8 @@ class RLOCPEnv:
         self.iteration += 1
 
         if self.iteration % self.dataset.charge_model_loop == 0:
-            self.dataset.curr_charge_model_iters = self.dataset.charge_model_iters
+            self.dataset.train_charge_model(self.dataset.charge_model_iters)
 
-        if self.dataset.curr_charge_model_iters > 0:
-            self.dataset.curr_charge_model_iters -= 1
-            self.dataset.train_charge_model()
-            
         charge_reward = self.dataset.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
         self.charge_reward = charge_reward.detach().item()
         _reward = (charge_reward - charger_cost_reward).detach().item()
