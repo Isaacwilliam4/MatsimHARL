@@ -9,6 +9,7 @@ from pathlib import Path
 from bidict import bidict
 from harl.envs.ocp.chargers import Charger, NoneCharger, StaticCharger, DynamicCharger
 from harl.envs.ocp.matsim_gnn import MatsimGNN
+from harl.envs.ocp.matsim_mlp import MatsimMLP
 from sklearn.cluster import KMeans
 import numpy as np
 import os
@@ -85,8 +86,12 @@ class MatsimXMLDataset(Dataset):
         pbar = tqdm(range(iterations), desc="Training Sim Learner")
         for _ in pbar:
             self.sample_chargers()
-            x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
-            output = self.charge_model(x, edge_index)
+            if isinstance(self.charge_model, MatsimGNN):
+                x, edge_index = self.linegraph.x.to(self.device), self.linegraph.edge_index.to(self.device) 
+                output = self.charge_model(x, edge_index)
+            elif isinstance(self.charge_model, MatsimMLP):
+                x = self.linegraph.x.to(self.device)
+                output = self.charge_model(x)
             response = self.send_reward_request()
             target = torch.tensor(response[0]).to(self.device)
             self.optimizer.zero_grad()
@@ -95,6 +100,8 @@ class MatsimXMLDataset(Dataset):
             loss.backward()
             self.optimizer.step()
             pbar.set_postfix(loss=loss.item())
+            self.charger_model_loss = loss.item()
+            
         self.charge_model.eval()
 
     def setup_dirs(self, config_path, time_string):

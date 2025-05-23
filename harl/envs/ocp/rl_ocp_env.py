@@ -5,6 +5,7 @@ from harl.envs.ocp.chargers import *
 from gymnasium.spaces import Box
 from gymnasium import spaces
 from harl.envs.ocp.matsim_gnn import MatsimGNN
+from harl.envs.ocp.matsim_mlp import MatsimMLP
 from harl.envs.ocp.matsim_xml_dataset import MatsimXMLDataset
 import numpy as np
 import pandas as pd
@@ -95,7 +96,13 @@ class RLOCPEnv:
         if self.iteration % self.dataset.charge_model_loop == 0:
             self.dataset.train_charge_model(self.dataset.charge_model_iters)
 
-        charge_reward = self.dataset.charge_model(self.dataset.linegraph.x.to(self.device), self.dataset.linegraph.edge_index.to(self.device))
+        if isinstance(self.dataset.charge_model, MatsimGNN):
+            x, edge_index = self.dataset.linegraph.x.to(self.dataset.device), self.dataset.linegraph.edge_index.to(self.dataset.device) 
+            charge_reward = self.dataset.charge_model(x, edge_index)
+        elif isinstance(self.dataset.charge_model, MatsimMLP):
+            x = self.dataset.linegraph.x.to(self.dataset.device)
+            charge_reward = self.dataset.charge_model(x)
+
         self.charge_reward = charge_reward.detach().item()
         _reward = (charge_reward - charger_cost_reward).detach().item()
 
