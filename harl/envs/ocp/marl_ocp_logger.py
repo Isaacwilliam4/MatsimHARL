@@ -2,7 +2,7 @@ from harl.common.base_logger import BaseLogger
 from torch.utils.tensorboard import SummaryWriter
 import time
 import numpy as np
-from harl.envs.ocp.rl_ocp_env import RLOCPEnv
+from rlevmatsim.envs.ocp.rl_ocp_env import RLOCPEnv
 from pathlib import Path
 import torch
 from copy import deepcopy as dc

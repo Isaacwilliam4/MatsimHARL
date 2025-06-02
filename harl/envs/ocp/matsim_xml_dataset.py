@@ -7,9 +7,9 @@ from gymnasium import spaces
 from torch_geometric.data import Data
 from pathlib import Path
 from bidict import bidict
-from harl.envs.ocp.chargers import Charger, NoneCharger, StaticCharger, DynamicCharger
-from harl.envs.ocp.matsim_gnn import MatsimGNN
-from harl.envs.ocp.matsim_mlp import MatsimMLP
+from rlevmatsim.envs.ocp.chargers import Charger, NoneCharger, StaticCharger, DynamicCharger
+from rlevmatsim.envs.ocp.matsim_gnn import MatsimGNN
+from rlevmatsim.envs.ocp.matsim_mlp import MatsimMLP
 from sklearn.cluster import KMeans
 import numpy as np
 import os
