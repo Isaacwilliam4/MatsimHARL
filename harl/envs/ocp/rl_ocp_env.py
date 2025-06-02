@@ -91,19 +91,8 @@ class RLOCPEnv:
         self.dataset.linegraph.x[:, -self.dataset.num_charger_types:] = new_charger_config
         
         charger_cost_reward = self.dataset.get_charger_cost_reward()
-        self.iteration += 1
-
-        if self.iteration % self.dataset.charge_model_loop == 0:
-            self.dataset.train_charge_model(self.dataset.charge_model_iters)
-
-        if isinstance(self.dataset.charge_model, MatsimGNN):
-            x, edge_index = self.dataset.linegraph.x.to(self.dataset.device), self.dataset.linegraph.edge_index.to(self.dataset.device) 
-            charge_reward = self.dataset.charge_model(x, edge_index)
-        elif isinstance(self.dataset.charge_model, MatsimMLP):
-            x = self.dataset.linegraph.x.to(self.dataset.device)
-            charge_reward = self.dataset.charge_model(x)
-
-        self.charge_reward = charge_reward.detach().item()
+        charge_reward, response = self.dataset.get_charge_reward()
+        
         _reward = (charge_reward - charger_cost_reward).detach().item()
 
         self.reward = _reward
